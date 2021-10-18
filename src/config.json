@@ -1,8 +1,8 @@
 {
-  "name": "材料入库",
-  "description": "筑快科技材料入库套件开发",
+  "name": "套件调试",
+  "description": "筑快科技套件调试",
   "icon": "",
-  "bizType": "isv.zhukuai.warehousing",
+  "bizType": "isv.zhukuai.zkoatiaoshi",
   "templateType": "advanced",
   "props": { "hiddenReason": false },
   "setters": [],
