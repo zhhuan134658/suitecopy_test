@@ -3,12 +3,12 @@ export default {
   "isSuite": true,
   "componentName": "DDBizSuite",
   "category": "suite_test",
-  "name": "套件调试",
-  "description": "筑快科技套件调试",
+  "name": "材料入库_test",
+  "description": "筑快科技材料入库套件开发",
   "icon": "",
   "props": {
-    "bizType": "isv.zhukuai.zkoatiaoshi",
-    "bizAlias": "isv.zhukuai.zkoatiaoshi",
+    "bizType": "isv.zhukuai.warehousing",
+    "bizAlias": "isv.zhukuai.warehousing",
     "extract": true,
     "isThirdSuite": true,
     "hiddenReason": false
@@ -106,7 +106,6 @@ export default {
       "props": {
         "bizAlias": "SelectPro",
         "commonBizType": "SelectProField",
-        "asyncCondition": "",
         "required": false,
         "placeholder": "请输入",
         "label": "项目名称"

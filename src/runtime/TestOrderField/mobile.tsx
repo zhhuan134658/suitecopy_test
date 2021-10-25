@@ -154,6 +154,9 @@ const FormField: IFormField = {
         if (type === 1) {
           console.log('9887987', newarr);
           const newssarr = [...newarr];
+          this.setState({
+            materialList: [...newarr],
+          });
           // 含税金额合计;
 
           let newarr2 = [];
@@ -168,7 +171,7 @@ const FormField: IFormField = {
           });
 
           this.setState({
-            Inputmoney1: eval(newarr2.join('+')).toFixed(2),
+            Inputmoney1: eval(newarr2.join('+')),
           });
           // 不含税金额合计;
 
@@ -184,10 +187,7 @@ const FormField: IFormField = {
           });
 
           this.setState({
-            Inputmoney2: eval(newarr4.join('+')).toFixed(2),
-          });
-          this.setState({
-            materialList: [...newarr],
+            Inputmoney2: eval(newarr4.join('+')),
           });
         } else if (type === 2) {
           this.setState({
@@ -302,6 +302,9 @@ const FormField: IFormField = {
   deleteItem(index) {
     let list = this.state.materialList;
     list.splice(index, 1);
+    this.setState({
+      materialList: list,
+    });
     //   含税金额
     let newarr2 = [];
 
@@ -325,7 +328,6 @@ const FormField: IFormField = {
       return item.no_amount_tax;
     });
     this.setState({
-      materialList: list,
       Inputmoney1: eval(newarr2.join('+')).toFixed(2),
       Inputmoney2: eval(newarr4.join('+')).toFixed(2),
     });
@@ -873,65 +875,67 @@ const FormField: IFormField = {
       );
     }
     return (
-      <div className="field-wrapper">
+      <div className="CorpHouse_class_m">
+        {' '}
         <div className="field-wrapper">
-          <div className="m-group m-group-mobile">
-            <div className="m-field-wrapper">
-              <div className="m-field m-field-mobile m-select-field">
-                <div className="m-field-head">
-                  <div className="m-field-label">
-                    <span>{label}</span>
+          <div className="field-wrapper">
+            <div className="m-group m-group-mobile">
+              <div className="m-field-wrapper">
+                <div className="m-field m-field-mobile m-select-field">
+                  <div className="m-field-head">
+                    <div className="m-field-label">
+                      <span>{label}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="m-field-box">
-                  <div className="m-field-content left">
-                    <div className="input-wrapper">
-                      <InputItem
-                        editable={false}
-                        value={this.state.chenkdata}
-                        onClick={this.getcheckdata}
-                        placeholder="请选择"
-                        readOnly
-                      ></InputItem>
+                  <div className="m-field-box">
+                    <div className="m-field-content left">
+                      <div className="input-wrapper">
+                        <InputItem
+                          editable={false}
+                          value={this.state.chenkdata}
+                          onClick={this.getcheckdata}
+                          placeholder="请选择"
+                          readOnly
+                        ></InputItem>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="tablefield-mobile">
-          <div className="table-body  tbody  ">
-            {this.state.materialList.map((item, index) => {
-              return (
-                <div>
-                  <div className="tbody-row-wrap">
-                    <div className="tbody-row-pannel">
-                      <div
-                        className="custom-list-title"
-                        style={{
-                          width: '100%',
-                          paddingLeft: '15px',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <div>
-                          {label}-明细({index + 1})
-                        </div>
-                        {this.state.materialList.length > 1 ? (
-                          <div
-                            className="dele_item"
-                            onClick={this.deleteItem.bind(this, index)}
-                          >
-                            删除
+          <div className="tablefield-mobile">
+            <div className="table-body  tbody  ">
+              {this.state.materialList.map((item, index) => {
+                return (
+                  <div>
+                    <div className="tbody-row-wrap">
+                      <div className="tbody-row-pannel">
+                        <div
+                          className="custom-list-title"
+                          style={{
+                            width: '100%',
+                            paddingLeft: '15px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <div>
+                            {label}-明细({index + 1})
                           </div>
-                        ) : (
-                          <div></div>
-                        )}
-                      </div>
-                      <div className="row">
-                        {/* <div>
+                          {this.state.materialList.length > 0 ? (
+                            <div
+                              className="dele_item"
+                              onClick={this.deleteItem.bind(this, index)}
+                            >
+                              删除
+                            </div>
+                          ) : (
+                            <div></div>
+                          )}
+                        </div>
+                        <div className="row">
+                          {/* <div>
                           <div className="field-wrapper">
                             <div className="m-group m-group-mobile">
                               <div className="m-field-wrapper">
@@ -969,33 +973,38 @@ const FormField: IFormField = {
                             </div>
                           </div>
                         </div> */}
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>物资名称</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>物资名称</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          editable={false}
-                                          type="text"
-                                          className="ant-input m-mobile-inner-input"
-                                          value={item.name}
-                                          placeholder="请选择"
-                                          onClick={this.onOpenChange.bind(
-                                            this,
-                                            index,
-                                          )}
-                                          onChange={e =>
-                                            this.onInputchange('name', index, e)
-                                          }
-                                        />
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            editable={false}
+                                            type="text"
+                                            className="ant-input m-mobile-inner-input"
+                                            value={item.name}
+                                            placeholder="请选择"
+                                            onClick={this.onOpenChange.bind(
+                                              this,
+                                              index,
+                                            )}
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'name',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1003,29 +1012,29 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>规格型号</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>规格型号</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          editable={false}
-                                          type="text"
-                                          className="ant-input m-mobile-inner-input"
-                                          value={item.size}
-                                          placeholder="自动获取"
-                                          readOnly
-                                        />
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            editable={false}
+                                            type="text"
+                                            className="ant-input m-mobile-inner-input"
+                                            value={item.size}
+                                            placeholder="自动获取"
+                                            readOnly
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1033,28 +1042,28 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>单位</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>单位</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          editable={false}
-                                          type="text"
-                                          readOnly
-                                          className="ant-input m-mobile-inner-input"
-                                          value={item.unit}
-                                          placeholder="自动获取"
-                                        />
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            editable={false}
+                                            type="text"
+                                            readOnly
+                                            className="ant-input m-mobile-inner-input"
+                                            value={item.unit}
+                                            placeholder="自动获取"
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1062,31 +1071,31 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>数量</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>数量</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          value={item.det_quantity}
-                                          placeholder="请输入"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'det_quantity',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            value={item.det_quantity}
+                                            placeholder="请输入"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'det_quantity',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1094,32 +1103,32 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>不含税单价(元)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>不含税单价(元)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          clear
-                                          value={item.no_unit_price}
-                                          placeholder="请输入"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'no_unit_price',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            clear
+                                            value={item.no_unit_price}
+                                            placeholder="请输入"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'no_unit_price',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1127,32 +1136,32 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>含税单价(元)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>含税单价(元)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          clear
-                                          value={item.unit_price}
-                                          placeholder="请输入"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'unit_price',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            clear
+                                            value={item.unit_price}
+                                            placeholder="请输入"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'unit_price',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1160,32 +1169,32 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>税率(%)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>税率(%)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          clear
-                                          value={item.tax_rate}
-                                          placeholder="请输入"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'tax_rate',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            clear
+                                            value={item.tax_rate}
+                                            placeholder="请输入"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'tax_rate',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1193,33 +1202,33 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>税额(元)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>税额(元)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          readOnly
-                                          clear
-                                          value={item.tax_amount}
-                                          placeholder="自动计算"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'tax_amount',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            readOnly
+                                            clear
+                                            value={item.tax_amount}
+                                            placeholder="自动计算"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'tax_amount',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1227,33 +1236,33 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>不含税金额(元)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>不含税金额(元)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          clear
-                                          readOnly
-                                          value={item.no_amount_tax}
-                                          placeholder="自动计算"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'no_amount_tax',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            clear
+                                            readOnly
+                                            value={item.no_amount_tax}
+                                            placeholder="自动计算"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'no_amount_tax',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1261,33 +1270,33 @@ const FormField: IFormField = {
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="field-wrapper">
-                            <div className="m-group m-group-mobile">
-                              <div className="m-field-wrapper">
-                                <div className="m-field m-field-mobile m-select-field">
-                                  <div className="m-field-head">
-                                    <div className="m-field-label">
-                                      <span>含税金额(元)</span>
+                          <div>
+                            <div className="field-wrapper">
+                              <div className="m-group m-group-mobile">
+                                <div className="m-field-wrapper">
+                                  <div className="m-field m-field-mobile m-select-field">
+                                    <div className="m-field-head">
+                                      <div className="m-field-label">
+                                        <span>含税金额(元)</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="m-field-box">
-                                    <div className="m-field-content left">
-                                      <div className="input-wrapper">
-                                        <InputItem
-                                          readOnly
-                                          clear
-                                          value={item.amount_tax}
-                                          placeholder="自动计算"
-                                          onChange={e =>
-                                            this.onInputchange(
-                                              'amount_tax',
-                                              index,
-                                              e,
-                                            )
-                                          }
-                                        ></InputItem>
+                                    <div className="m-field-box">
+                                      <div className="m-field-content left">
+                                        <div className="input-wrapper">
+                                          <InputItem
+                                            readOnly
+                                            clear
+                                            value={item.amount_tax}
+                                            placeholder="自动计算"
+                                            onChange={e =>
+                                              this.onInputchange(
+                                                'amount_tax',
+                                                index,
+                                                e,
+                                              )
+                                            }
+                                          ></InputItem>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1299,134 +1308,134 @@ const FormField: IFormField = {
                       </div>
                     </div>
                   </div>
+                );
+              })}
+              <div className="table-actions">
+                <div className="tbody-add-button tTap" onClick={this.addSon}>
+                  <img
+                    style={{ width: '20px' }}
+                    src="https://dingyunlaowu.oss-cn-hangzhou.aliyuncs.com/xiezhu//Em46p8naW61629791119284.png"
+                    alt=""
+                  />
+                  &nbsp;
+                  <span className="add-button-text">增加明细</span>
                 </div>
-              );
-            })}
-            <div className="table-actions">
-              <div className="tbody-add-button tTap" onClick={this.addSon}>
-                <img
-                  style={{ width: '20px' }}
-                  src="https://dingyunlaowu.oss-cn-hangzhou.aliyuncs.com/xiezhu//Em46p8naW61629791119284.png"
-                  alt=""
-                />
-                &nbsp;
-                <span className="add-button-text">增加明细</span>
               </div>
             </div>
           </div>
-        </div>
-        {/*  */}
+          {/*  */}
 
-        {/* 合计 */}
-        <div className="field-wrapper">
-          <div className="m-group m-group-mobile">
-            <div className="m-field-wrapper">
-              <div className="m-field m-field-mobile m-select-field">
-                <div className="m-field-head">
-                  <div className="m-field-label">
-                    <span>不含税金额合计(元)</span>
+          {/* 合计 */}
+          <div className="field-wrapper">
+            <div className="m-group m-group-mobile">
+              <div className="m-field-wrapper">
+                <div className="m-field m-field-mobile m-select-field">
+                  <div className="m-field-head">
+                    <div className="m-field-label">
+                      <span>不含税金额合计(元)</span>
+                    </div>
                   </div>
-                </div>
-                <div className="m-field-box">
-                  <div className="m-field-content left">
-                    <div className="input-wrapper">
-                      <InputItem
-                        editable={false}
-                        value={this.state.Inputmoney2}
-                        placeholder="自动计算"
-                        readOnly
-                      ></InputItem>
+                  <div className="m-field-box">
+                    <div className="m-field-content left">
+                      <div className="input-wrapper">
+                        <InputItem
+                          editable={false}
+                          value={this.state.Inputmoney2}
+                          placeholder="自动计算"
+                          readOnly
+                        ></InputItem>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="field-wrapper">
-          <div className="m-group m-group-mobile">
-            <div className="m-field-wrapper">
-              <div className="m-field m-field-mobile m-select-field">
-                <div className="m-field-head">
-                  <div className="m-field-label">
-                    <span>含税金额合计(元)</span>
+          <div className="field-wrapper">
+            <div className="m-group m-group-mobile">
+              <div className="m-field-wrapper">
+                <div className="m-field m-field-mobile m-select-field">
+                  <div className="m-field-head">
+                    <div className="m-field-label">
+                      <span>含税金额合计(元)</span>
+                    </div>
                   </div>
-                </div>
-                <div className="m-field-box">
-                  <div className="m-field-content left">
-                    <div className="input-wrapper">
-                      <InputItem
-                        editable={false}
-                        value={this.state.Inputmoney1}
-                        placeholder="自动计算"
-                        readOnly
-                      ></InputItem>
+                  <div className="m-field-box">
+                    <div className="m-field-content left">
+                      <div className="input-wrapper">
+                        <InputItem
+                          editable={false}
+                          value={this.state.Inputmoney1}
+                          placeholder="自动计算"
+                          readOnly
+                        ></InputItem>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* 物资明细 */}
-        {createPortal(
-          <Drawer
-            className="my-drawer"
-            open={true}
-            style={{
-              minHeight: document.documentElement.clientHeight,
+          {/* 物资明细 */}
+          {createPortal(
+            <Drawer
+              className="my-drawer"
+              open={true}
+              style={{
+                minHeight: document.documentElement.clientHeight,
 
-              display: this.state.showElem,
-            }}
-            enableDragHandle
-            contentStyle={{
-              color: '#A6A6A6',
-              textAlign: 'center',
-              paddingTop: 42,
-            }}
-            sidebar={sidebar}
-            onOpenChange={this.onOpenChange}
-          ></Drawer>,
-          document.getElementById('MF_APP'),
-        )}
-        {createPortal(
-          <Drawer
-            className="my-drawer"
-            open={true}
-            style={{
-              minHeight: document.documentElement.clientHeight,
-              display: this.state.showElem2,
-            }}
-            enableDragHandle
-            contentStyle={{
-              color: '#A6A6A6',
-              textAlign: 'center',
-              paddingTop: 42,
-            }}
-            sidebar={treesidebar}
-            onOpenChange={this.onOpenChange2}
-          ></Drawer>,
-          document.getElementById('MF_APP'),
-        )}
-        {createPortal(
-          <Drawer
-            className="my-drawer"
-            open={true}
-            style={{
-              minHeight: document.documentElement.clientHeight,
-              display: this.state.showElem3,
-            }}
-            enableDragHandle
-            contentStyle={{
-              color: '#A6A6A6',
-              textAlign: 'center',
-              paddingTop: 42,
-            }}
-            sidebar={checkdebar}
-            onOpenChange={this.onOpenChange3}
-          ></Drawer>,
-          document.getElementById('MF_APP'),
-        )}
+                display: this.state.showElem,
+              }}
+              enableDragHandle
+              contentStyle={{
+                color: '#A6A6A6',
+                textAlign: 'center',
+                paddingTop: 42,
+              }}
+              sidebar={sidebar}
+              onOpenChange={this.onOpenChange}
+            ></Drawer>,
+            document.getElementById('MF_APP'),
+          )}
+          {createPortal(
+            <Drawer
+              className="my-drawer"
+              open={true}
+              style={{
+                minHeight: document.documentElement.clientHeight,
+                display: this.state.showElem2,
+              }}
+              enableDragHandle
+              contentStyle={{
+                color: '#A6A6A6',
+                textAlign: 'center',
+                paddingTop: 42,
+              }}
+              sidebar={treesidebar}
+              onOpenChange={this.onOpenChange2}
+            ></Drawer>,
+            document.getElementById('MF_APP'),
+          )}
+          {createPortal(
+            <Drawer
+              className="my-drawer"
+              open={true}
+              style={{
+                minHeight: document.documentElement.clientHeight,
+                display: this.state.showElem3,
+              }}
+              enableDragHandle
+              contentStyle={{
+                color: '#A6A6A6',
+                textAlign: 'center',
+                paddingTop: 42,
+              }}
+              sidebar={checkdebar}
+              onOpenChange={this.onOpenChange3}
+            ></Drawer>,
+            document.getElementById('MF_APP'),
+          )}
+        </div>
       </div>
     );
   },

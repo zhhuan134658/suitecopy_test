@@ -56,7 +56,7 @@ if (!window.SuiteCommonField) {
 } 
 
 if(window.location.href.indexOf('/mobile/') > -1){
-  window.SuiteCommonField['isv.zhukuai.zkoatiaoshi'] = {
+  window.SuiteCommonField['isv.zhukuai.warehousing'] = {
     SelectProField,SelectProtwoField,SelectTbproField,SelectDepositField,SelectHeField,SelectRelatedField,SelectHeshouField,SelectLeaseField,SelectZuField,SelectFenField,SelectConField,SelectjiaField,SelectLaoField,SelectSpoField,SelecTickeField,SelecTickefaField,TestMaterField,TestCollectionField,TestLabourField,TestSubconField,TestRegistField,SelectAccField,CorpSupplierField,CorpSupplieryiField,CorpHouseField,PositionDesField,TestBiddingField,TestPlanField,TestOrderField,TestOrdernewField,TestSheField,TestMaterialField,TestApplicationField,TestSetField,TestPurField,TestExpeField,TestCinField,TestOutField,TestCunField,TestLeaseField,TestLeconField,TestMachineryField,TestDemandField,TestInspecField,TestMainField,TestOliField,TestScienceField,TestOpeningField,AntdUploadFiled
   };
 }
