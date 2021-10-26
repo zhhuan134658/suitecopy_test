@@ -502,6 +502,7 @@ export default {
         "required": false,
         "placeholder": "请选择",
         "label": "项目",
+        "asyncCondition": true,
         "options": [
           {
             "key": "1",
@@ -521,6 +522,7 @@ export default {
         "required": false,
         "placeholder": "请选择",
         "label": "项目",
+        "asyncCondition": true,
         "options": [
           {
             "key": "1",

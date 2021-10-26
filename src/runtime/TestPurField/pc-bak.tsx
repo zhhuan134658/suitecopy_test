@@ -21,29 +21,20 @@ import {
 } from 'antd';
 const { Search } = Input;
 const { Option } = Select;
+import { IFormField } from '../../types';
 const { Column } = Table;
 import { FormInstance } from 'antd/lib/form';
 const { TabPane } = Tabs;
 
-import { fpDivide, fpMul, toFixed } from '../../utils/fpOperations';
+import { fpAdd, fpDivide, fpMul, toFixed } from '../../utils/fpOperations';
 import { calcTaxRate } from '../../utils/calcTax';
-import {
-  DataType,
-  EditableCellProps,
-  ISwapFormField,
-  EditableRowProps,
-} from '../../types/TestPurField/interface';
 
 import './pc.less';
-import {
-  reduceAndRemoveDuplicate,
-  removeDuplicate,
-} from '../../utils/arrayHandle';
-const purchaseColumns = [
+const mycolumns = [
   {
     title: '采购主题',
     dataIndex: 'name',
-    render: (_: any, record: any) => (
+    render: (_, record: any) => (
       <Tooltip placement="topLeft" title={record.name}>
         <span>{record.name}</span>
       </Tooltip>
@@ -54,11 +45,11 @@ const purchaseColumns = [
     dataIndex: 'detailed_money',
   },
 ];
-const projectColumns = [
+const newmycolumns = [
   {
     title: '计划主题',
     dataIndex: 'name',
-    render: (_: any, record: any) => (
+    render: (_, record: any) => (
       <Tooltip placement="topLeft" title={record.name}>
         <span>{record.name}</span>
       </Tooltip>
@@ -69,11 +60,11 @@ const projectColumns = [
     dataIndex: 'project_name',
   },
 ];
-const purchaseItemColumns = [
+const mycolumnstree = [
   {
     title: '物品名称',
     dataIndex: 'name',
-    render: (_: any, record: any) => (
+    render: (_, record: any) => (
       <Tooltip placement="topLeft" title={record.name}>
         <span>{record.name}</span>
       </Tooltip>
@@ -88,13 +79,37 @@ const purchaseItemColumns = [
     title: '单位',
     dataIndex: 'unit',
   },
+  //   {
+  //     title: '不含税单价(元)',
+  //     dataIndex: 'no_unit_price',
+  //   },
   {
     title: '规格型号',
     dataIndex: 'size',
   },
 ];
-
+interface ISwapFormField extends IFormField {
+  //   handleChange: () => void;
+  handleOk: () => void;
+  handleCancel: () => void;
+  //   handleTableChange: () => void;
+}
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
+
+interface Item {
+  id: number;
+  key: string;
+  name: string;
+  size: string;
+  type: string;
+  num1: number;
+  num2: number;
+  num3: number;
+}
+
+interface EditableRowProps {
+  index: number;
+}
 
 const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -107,6 +122,16 @@ const EditableRow: React.FC<EditableRowProps> = ({ index, ...props }) => {
   );
 };
 
+interface EditableCellProps {
+  title: React.ReactNode;
+  editable: boolean;
+  children: React.ReactNode;
+  dataIndex: keyof Item;
+  record: Item;
+  handleSave: (record: Item, value: any) => void;
+  handleChange: (record: Item) => void;
+}
+
 const EditableCell: React.FC<EditableCellProps> = ({
   title,
   editable,
@@ -118,7 +143,8 @@ const EditableCell: React.FC<EditableCellProps> = ({
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  // const inputRef = useRef(null);
+  const inputRef = useRef<Input>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -160,25 +186,64 @@ const EditableCell: React.FC<EditableCellProps> = ({
           ref={inputRef}
           onPressEnter={save}
           onBlur={save}
-          max={Number.MAX_SAFE_INTEGER}
           min={0}
           step="0.01"
           placeholder="请输入"
-          bordered={false}
-          controls={false}
         />
       </Form.Item>
     ) : (
-      <div className="editable-cell-value-wrap" onClick={toggleEdit}>
+      <div
+        className="editable-cell-value-wrap"
+        style={{ paddingRight: 24 }}
+        onClick={toggleEdit}
+      >
         {children}
       </div>
     );
+    // childNode = (
+    //   <Form.Item
+    //     style={{ margin: 0 }}
+    //     name={dataIndex}
+    //     rules={[
+    //       {
+    //         required: true,
+    //         message: `${title} 不能为空`,
+    //       },
+    //     ]}
+    //   >
+    //     <InputNumber
+    //       ref={inputRef}
+    //       onChange={save}
+    //       onBlur={save}
+    //       placeholder="请输入"
+    //     />
+    //   </Form.Item>
+    // );
   }
 
   return <td {...restProps}>{childNode}</td>;
 };
 
 type EditableTableProps = Parameters<typeof Table>[0];
+
+interface DataType {
+  unit_price: any;
+  id: any;
+  det_quantity: any;
+  no_unit_price: any;
+  tax_rate: any;
+
+  amount_tax: any;
+  key: React.Key;
+  name: string;
+  size: string;
+  type: string;
+}
+
+interface EditableTableState {
+  dataSource: DataType[];
+  count: number;
+}
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
@@ -234,448 +299,396 @@ const FormField: ISwapFormField = {
     // const newdate = this.state.allData;
     // this.asyncSetFieldProps(newdate);
   }, //新增
+  newAdd() {
+    this.setState({
+      visibleModal: true,
+    });
+  },
+  //取消
+  handlenewCancel() {
+    this.setState({
+      visibleModal: false,
+    });
+  },
+  //确认
+  handlenewOk(values) {
+    console.log(values);
+    this.setState({
+      visibleModal: false,
+    });
+  },
 
-  methods() {
-    let _this = this;
-    return {
-      newAdd() {
-        _this.setState({
-          visibleModal: true,
-        });
-      },
-      handleNewCancel() {
-        _this.setState({
-          visibleModal: false,
-        });
-      },
-      handleNewOk(values: any) {
-        console.log(values);
-        this.setState({
-          visibleModal: false,
-        });
-      },
-      onSearch(value: any) {
-        console.log(value);
-        const newvalue = _this.state.allData;
-        newvalue.name = value;
+  onGenderChange(value) {
+    console.log(value);
+  },
+  onGenderChange1(value, key) {
+    console.log(key);
+  },
+  onSearch(value) {
+    console.log(value);
+    const newvalue = this.state.allData;
+    newvalue.name = value;
 
-        newvalue.page = 1;
-        newvalue.rk_id = ['-1'];
-        _this.setState({
-          allData: newvalue,
-        });
-        _this.asyncSetFieldProps(newvalue);
-      },
-      onChangePage(page: any) {
-        const newPage = _this.state.allData;
-        newPage.page = page;
-        _this.setState({
-          allData: newPage,
-        });
-        _this.asyncSetFieldProps(newPage);
-      },
-      onChangePageTree(page: any) {
-        const newpage = this.state.allData;
-        newpage.page = page;
-        newpage.rk_id = ['-1'];
-        console.log(newpage);
-        _this.setState({
-          allData: newpage,
-        });
-        _this.asyncSetFieldProps(newpage);
-      },
-      handleChange(row: DataType) {
-        _this.setState({ currentEditId: row.key });
-      },
-      handleCancelTree() {
-        _this.setState({ isModalVisibletree: false });
-        _this.setState({ selectedRowKeys: [] });
-      },
-      handleDelete(row: DataType) {
-        const dataSource = [..._this.state.dataSource];
-        console.log('deleteRow', row);
-        const arr = dataSource.filter(item => item.id !== row.id);
-        //   含税金额
-        let newarr2 = [];
+    newvalue.page = 1;
+    newvalue.rk_id = ['-1'];
+    this.setState({
+      allData: newvalue,
+    });
+    this.asyncSetFieldProps(newvalue);
+  },
+  onChangepage(page) {
+    const newpage = this.state.allData;
+    newpage.page = page;
+    console.log(newpage);
+    this.setState({
+      allData: newpage,
+    });
+    this.asyncSetFieldProps(newpage);
+    // this.getData(page);
+    // this.setState({
+    //   loading: true,
+    // });
+  },
+  onChangepagetree(page) {
+    const newpage = this.state.allData;
+    newpage.page = page;
+    newpage.rk_id = ['-1'];
+    console.log(newpage);
+    this.setState({
+      allData: newpage,
+    });
+    this.asyncSetFieldProps(newpage);
+    // this.getData(page);
+    // this.setState({
+    //   loading: true,
+    // });
+  },
+  handleChange(row: DataType) {
+    // const inputRef = useRef<Input>(null);
+    // const { form } = this.props;
+    // form.setFieldValue('TestPur', e.target.value);
+    // document.getElementsByClassName('ptID').blur();
+    // inputRef.current!.focus();
+    this.setState({ currentEditId: row.key });
+    // this.setState({ isModalVisible: true });
+  },
 
-        newarr2 = arr.filter(item => {
-          if (item.amount_tax) {
-            return item;
-          }
-        });
-        newarr2 = newarr2.map(item => {
-          return item.amount_tax;
-        });
-        //不含税金额
-        let newarr4 = [];
+  handleCancel() {
+    this.setState({ isModalVisible: false });
+    this.setState({ selectedRowKeys: [] });
+  },
+  handleCanceltree() {
+    this.setState({ isModalVisibletree: false });
+    this.setState({ selectedRowKeys: [] });
+  },
+  handleDelete(row) {
+    const dataSource = [...this.state.dataSource];
+    console.log('deleteRow', row);
+    const arr = dataSource.filter(item => item.id !== row.id);
+    //   含税金额
+    let newarr2 = [];
 
-        newarr4 = arr.filter(item => {
-          if (item.no_amount_tax) {
-            return item;
-          }
-        });
-        newarr4 = newarr4.map(item => {
-          return item.no_amount_tax;
-        });
-        console.log('deleteLog', newarr2, newarr4);
-        let inputMoney1Data = null;
-        if (eval(newarr2.join('+'))) {
-          inputMoney1Data = toFixed(eval(newarr2.join('+')), 2);
-        }
-        let inputMoney2Data = null;
-        if (eval(newarr4.join('+'))) {
-          inputMoney2Data = toFixed(eval(newarr4.join('+')), 2);
-        }
+    newarr2 = arr.filter(item => {
+      if (item.amount_tax) {
+        return item;
+      }
+    });
+    newarr2 = newarr2.map(item => {
+      return item.amount_tax;
+    });
+    //不含税金额
+    let newarr4 = [];
 
-        _this.setState({
-          dataSource: arr,
-          Inputmoney1: inputMoney1Data,
-          Inputmoney2: inputMoney2Data,
-        });
-      },
-      newhandleAdd() {
-        const { form } = _this.props;
-        const Pro_name = form.getFieldValue('Autopro');
-        // if (!Pro_name) {
-        //   return notification.open({
-        //     message: '请先选择项目',
-        //   });
-        // }
-        const newddd = _this.state.defaultActiveKey;
-        console.log(newddd);
-        _this.setState({ dstatus: '1' });
-        let newpage = {
-          rk_id: [newddd],
-          number: '10',
-          page: 1,
-          name: '',
-        };
-        _this.setState({
-          allData: newpage,
-        });
-        _this.asyncSetFieldProps(newpage);
-        _this.setState({
-          isModalVisible: true,
-        });
-      },
-      handleAdd() {
-        const { form } = _this.props;
-        const Pro_name = form.getFieldValue('Autopro');
-        if (!Pro_name) {
-          return notification.open({
-            message: '请先选择项目',
-          });
-        }
-        _this.setState({ dstatus: '2' });
-        console.log(_this.state.allData);
-        let newpage = {
-          rk_id: ['-1'],
-          number: '10',
-          page: 1,
-          name: '',
-        };
+    newarr4 = arr.filter(item => {
+      if (item.no_amount_tax) {
+        return item;
+      }
+    });
+    newarr4 = newarr4.map(item => {
+      return item.no_amount_tax;
+    });
+    console.log('deleteLog', newarr2, newarr4);
+    let inputMoney1Data = 0;
+    if (eval(newarr2.join('+'))) {
+      inputMoney1Data = toFixed(eval(newarr2.join('+')), 2);
+    }
+    let inputMoney2Data = 0;
+    if (eval(newarr4.join('+'))) {
+      inputMoney2Data = toFixed(eval(newarr4.join('+')), 2);
+    }
 
-        _this.asyncSetFieldProps(newpage);
-        _this.setState({
-          isModalVisibletree: true,
-        });
-      },
-      handleSave(row: DataType, values: {}) {
-        const { form } = _this.props;
-        const newData = [..._this.state.dataSource];
-        const reg = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/;
-        const index = newData.findIndex(item => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        console.log('123', row, Object.keys(values)[0]);
-        //计算
-        if (!reg.test(row.tax_rate)) {
-          //税率必须手动输入
-          return _this.setState({
-            dataSource: newData,
-          });
-        }
-        switch (Object.keys(values)[0]) {
-          case 'no_unit_price': //不含税单价
-            if (reg.test(row.no_unit_price)) {
-              if (reg.test(row.tax_rate)) {
-                let a = 1 + Number(row.tax_rate) * 0.01;
-                newData[index].unit_price = toFixed(
-                  fpMul(Number(row.no_unit_price), a),
-                  2,
-                );
-              } else if (reg.test(row.unit_price)) {
-                newData[index].tax_rate = calcTaxRate(row);
-              }
-            } else if (
-              row.no_unit_price == null &&
-              reg.test(row.tax_rate) &&
-              row.unit_price
-            ) {
-              let a = 1 + row.tax_rate * 0.01;
-              newData[index].no_unit_price = toFixed(
-                fpDivide(row.unit_price, a),
-                2,
-              );
-            }
-            break;
-          case 'unit_price':
-            //含税单价
-            if (reg.test(row.unit_price)) {
-              if (reg.test(row.tax_rate)) {
-                let a = 1 + row.tax_rate * 0.01;
-                newData[index].no_unit_price = toFixed(
-                  fpDivide(row.unit_price, a),
-                  2,
-                );
-                //   newData[index].no_unit_price = (
-                //     row.unit_price /
-                //     (1 + row.tax_rate * 0.01)
-                //   ).toFixed(2);
-              } else if (reg.test(row.no_unit_price)) {
-                const taxRate = calcTaxRate(row);
-                newData[index].tax_rate = taxRate;
-                if (reg.test(row.det_quantity)) {
-                  let a = fpMul(row.no_unit_price, row.det_quantity);
-                  let b = fpMul(taxRate, 0.01);
-                  newData[index].tax_amount = toFixed(fpMul(a, b), 2);
-                }
-              }
-            } else if (
-              row.unit_price == null &&
-              reg.test(row.tax_rate) &&
-              row.no_unit_price
-            ) {
-              let a = 1 + row.tax_rate * 0.01;
-              newData[index].unit_price = toFixed(
-                fpMul(row.no_unit_price, a),
-                2,
-              );
-              //   newData[index].unit_price = (
-              //     row.no_unit_price *
-              //     (1 + row.tax_rate * 0.01)
-              //   ).toFixed(2);
-            }
-            if (row.unit_price && row.det_quantity) {
-              //   newData[index].amount_tax = (
-              //     row.unit_price * row.det_quantity
-              //   ).toFixed(2);
-              newData[index].amount_tax = toFixed(
-                fpMul(row.unit_price, row.det_quantity),
-                2,
-              );
-            }
+    this.setState({
+      dataSource: arr,
+      Inputmoney1: inputMoney1Data,
+      Inputmoney2: inputMoney2Data,
+    });
+  },
+  newhandleAdd() {
+    const { form } = this.props;
+    const Pro_name = form.getFieldValue('Autopro');
+    // if (!Pro_name) {
+    //   return notification.open({
+    //     message: '请先选择项目',
+    //   });
+    // }
+    const newddd = this.state.defaultActiveKey;
+    console.log(newddd);
+    this.setState({ dstatus: '1' });
+    let newpage = {
+      rk_id: [newddd],
+      number: '10',
+      page: 1,
+      name: '',
+    };
+    this.setState({
+      allData: newpage,
+    });
+    this.asyncSetFieldProps(newpage);
+    this.setState({
+      isModalVisible: true,
+    });
+  },
+  handleAdd() {
+    const { form } = this.props;
+    const Pro_name = form.getFieldValue('Autopro');
+    if (!Pro_name) {
+      return notification.open({
+        message: '请先选择项目',
+      });
+    }
+    this.setState({ dstatus: '2' });
+    console.log(this.state.allData);
+    let newpage = {
+      rk_id: ['-1'],
+      number: '10',
+      page: 1,
+      name: '',
+    };
 
-            //不含税金额
-            if (row.unit_price && row.det_quantity && reg.test(row.tax_rate)) {
-              let a = 1 + row.tax_rate * 0.01;
-              let b = fpMul(row.unit_price, row.det_quantity);
-
-              newData[index].no_amount_tax = toFixed(fpDivide(b, a), 2);
-
-              let c = row.unit_price * row.det_quantity;
-              let d = 1 + row.tax_rate * 0.01;
-              let e = fpDivide(c, d);
-              let f = row.tax_rate * 0.01;
-              newData[index].tax_amount = toFixed(fpMul(e, f), 2);
-            }
-
-            break;
-          case 'tax_rate':
-            if (row.no_unit_price && !reg.test(row.unit_price)) {
-              newData[index].unit_price = toFixed(
-                row.no_unit_price * (1 + row.tax_rate * 0.01),
-                2,
-              );
-            } else if (!reg.test(row.no_unit_price) && row.unit_price) {
-              newData[index].no_unit_price = toFixed(
-                row.unit_price / (1 + row.tax_rate * 0.01),
-                2,
-              );
-
-              newData[index].amount_tax = toFixed(
-                row.unit_price * row.det_quantity,
-                2,
-              );
-              newData[index].no_amount_tax = toFixed(
-                (row.unit_price * row.det_quantity) / (1 + row.tax_rate * 0.01),
-                2,
-              );
-              newData[index].tax_amount = toFixed(
-                newData[index].amount_tax - newData[index].no_amount_tax,
-                2,
-              );
-            } else if (row.no_unit_price && row.unit_price) {
-              let a = 1 + row.tax_rate * 0.01;
-              newData[index].unit_price = toFixed(
-                fpMul(row.no_unit_price, a),
-                2,
-              );
-            }
-            if (
-              reg.test(row.no_unit_price) &&
-              reg.test(row.det_quantity) &&
-              reg.test(row.tax_rate)
-            ) {
-              let a = fpMul(row.no_unit_price, row.det_quantity);
-              let b = fpMul(row.tax_rate, 0.01);
-              newData[index].tax_amount = toFixed(fpMul(a, b), 2);
-              let c = fpMul(row.no_unit_price, row.det_quantity);
-              let d = 1 + row.tax_rate * 0.01;
-              newData[index].amount_tax = toFixed(fpMul(c, d), 2);
-            }
-
-            break;
-          default:
-            break;
-        }
-
-        //税额
-        if (Object.keys(values)[0] != 'unit_price') {
-          if (row.no_unit_price && row.det_quantity && reg.test(row.tax_rate)) {
-            let a = fpMul(row.no_unit_price, row.det_quantity);
-            let b = fpMul(row.tax_rate, 0.01);
-            newData[index].tax_amount = toFixed(fpMul(a, b), 2);
-          }
-          //   不含税
-          if (row.no_unit_price && row.det_quantity) {
-            newData[index].no_amount_tax = toFixed(
-              fpMul(row.no_unit_price, row.det_quantity),
+    this.asyncSetFieldProps(newpage);
+    this.setState({
+      isModalVisibletree: true,
+    });
+  },
+  handleSave(row: DataType, values) {
+    const { form } = this.props;
+    const newData = [...this.state.dataSource];
+    const reg = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/;
+    const index = newData.findIndex(item => row.id === item.id);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, ...row });
+    console.log('123', row, Object.keys(values)[0]);
+    //计算
+    // if (!reg.test(row.tax_rate)) {
+    //   return this.setState({
+    //     dataSource: newData,
+    //   });
+    // }
+    switch (Object.keys(values)[0]) {
+      case 'no_unit_price': //不含税单价
+        if (reg.test(row.no_unit_price)) {
+          if (reg.test(row.tax_rate)) {
+            let a = 1 + Number(row.tax_rate) * 0.01;
+            newData[index].unit_price = toFixed(
+              fpMul(Number(row.no_unit_price), a),
               2,
             );
+          } else if (reg.test(row.unit_price)) {
+            newData[index].tax_rate = calcTaxRate(row);
           }
-          //含税
-          if (row.no_unit_price && row.det_quantity && reg.test(row.tax_rate)) {
-            let a = fpMul(row.no_unit_price, row.det_quantity);
-            let b = 1 + row.tax_rate * 0.01;
-
-            newData[index].amount_tax = toFixed(fpMul(a, b), 2);
+        } else if (
+          row.no_unit_price == null &&
+          reg.test(row.tax_rate) &&
+          row.unit_price
+        ) {
+          let a = 1 + row.tax_rate * 0.01;
+          newData[index].no_unit_price = toFixed(
+            fpDivide(row.unit_price, a),
+            2,
+          );
+        }
+        break;
+      case 'unit_price':
+        //含税单价
+        if (reg.test(row.unit_price)) {
+          if (reg.test(row.tax_rate)) {
+            let a = 1 + row.tax_rate * 0.01;
+            newData[index].no_unit_price = toFixed(
+              fpDivide(row.unit_price, a),
+              2,
+            );
+            //   newData[index].no_unit_price = (
+            //     row.unit_price /
+            //     (1 + row.tax_rate * 0.01)
+            //   ).toFixed(2);
+          } else if (reg.test(row.no_unit_price)) {
+            const taxRate = calcTaxRate(row);
+            newData[index].tax_rate = taxRate;
+            if (reg.test(row.det_quantity)) {
+              let a = fpMul(row.no_unit_price, row.det_quantity);
+              let b = fpMul(taxRate, 0.01);
+              newData[index].tax_amount = toFixed(fpMul(a, b), 2);
+            }
           }
+        } else if (
+          row.unit_price == null &&
+          reg.test(row.tax_rate) &&
+          row.no_unit_price
+        ) {
+          let a = 1 + row.tax_rate * 0.01;
+          newData[index].unit_price = toFixed(fpMul(row.no_unit_price, a), 2);
+          //   newData[index].unit_price = (
+          //     row.no_unit_price *
+          //     (1 + row.tax_rate * 0.01)
+          //   ).toFixed(2);
+        }
+        if (row.unit_price && row.det_quantity) {
+          //   newData[index].amount_tax = (
+          //     row.unit_price * row.det_quantity
+          //   ).toFixed(2);
+          newData[index].amount_tax = toFixed(
+            fpMul(row.unit_price, row.det_quantity),
+            2,
+          );
         }
 
-        _this.setState({
-          dataSource: newData,
-        });
-        console.log(newData);
-        // 含税金额合计;
-        const newarr1 = [..._this.state.dataSource];
-        let newarr2 = [];
+        //不含税金额
+        if (row.unit_price && row.det_quantity && reg.test(row.tax_rate)) {
+          let a = 1 + row.tax_rate * 0.01;
+          let b = fpMul(row.unit_price, row.det_quantity);
 
-        newarr2 = newarr1.filter(item => {
-          if (item.amount_tax) {
-            return item;
-          }
-        });
-        newarr2 = newarr2.map(item => {
-          return item.amount_tax;
-        });
+          newData[index].no_amount_tax = toFixed(fpDivide(b, a), 2);
 
-        _this.setState({
-          Inputmoney1: eval(newarr2.join('+'))
-            ? toFixed(eval(newarr2.join('+')), 2)
-            : null,
-        });
-        // 不含税金额合计;
-        const newarr3 = [..._this.state.dataSource];
-        let newarr4 = [];
 
-        newarr4 = newarr3.filter(item => {
-          if (item.no_amount_tax) {
-            return item;
-          }
-        });
-        newarr4 = newarr4.map(item => {
-          return item.no_amount_tax;
-        });
+          let c = row.unit_price * row.det_quantity;
+          let d = 1 + row.tax_rate * 0.01;
+          let e = fpDivide(c, d);
+          let f = row.tax_rate * 0.01;
+          newData[index].tax_amount = toFixed(fpMul(e, f), 2);
 
-        _this.setState({
-          Inputmoney2: eval(newarr4.join('+'))
-            ? toFixed(eval(newarr4.join('+')), 2)
-            : null,
-        });
-      },
-      rowClick(record: any, rowkey: any) {
-        const { form } = _this.props;
-        const newData = [..._this.state.dataSource];
-        const index = newData.findIndex(
-          item => _this.state.currentEditId === item.key,
+        }
+
+        break;
+      case 'tax_rate':
+        if (row.no_unit_price && !reg.test(row.unit_price)) {
+
+
+          newData[index].unit_price = toFixed(
+            row.no_unit_price * (1 + row.tax_rate * 0.01),
+            2,
+          );
+        } else if (!reg.test(row.no_unit_price) && row.unit_price) {
+
+          newData[index].no_unit_price = toFixed(
+            row.unit_price / (1 + row.tax_rate * 0.01),
+            2,
+          );
+
+          newData[index].amount_tax = toFixed(
+            row.unit_price * row.det_quantity,
+            2,
+          );
+          newData[index].no_amount_tax = toFixed(
+            (row.unit_price * row.det_quantity) / (1 + row.tax_rate * 0.01),
+            2,
+          );
+          newData[index].tax_amount = toFixed(
+            newData[index].amount_tax - newData[index].no_amount_tax,
+            2,
+          );
+        } else if (row.no_unit_price && row.unit_price) {
+          let a = 1 + row.tax_rate * 0.01;
+          newData[index].unit_price = toFixed(fpMul(row.no_unit_price, a), 2);
+        }
+        if (
+          reg.test(row.no_unit_price) &&
+          reg.test(row.det_quantity) &&
+          reg.test(row.tax_rate)
+        ) {
+          let a = fpMul(row.no_unit_price, row.det_quantity);
+          let b = fpMul(row.tax_rate, 0.01);
+          newData[index].tax_amount = toFixed(fpMul(a, b), 2);
+          let c = fpMul(row.no_unit_price, row.det_quantity);
+          let d = 1 + row.tax_rate * 0.01;
+          newData[index].amount_tax = toFixed(fpMul(c, d), 2);
+
+        }
+
+        break;
+      default:
+        break;
+    }
+
+    //税额
+    if (Object.keys(values)[0] != 'unit_price') {
+      if (row.no_unit_price && row.det_quantity && reg.test(row.tax_rate)) {
+        let a = fpMul(row.no_unit_price, row.det_quantity);
+        let b = fpMul(row.tax_rate, 0.01);
+        newData[index].tax_amount = toFixed(fpMul(a, b), 2);
+      }
+      //   不含税
+      if (row.no_unit_price && row.det_quantity) {
+        newData[index].no_amount_tax = toFixed(
+          fpMul(row.no_unit_price, row.det_quantity),
+          2,
         );
-        const currentKey = newData[index].key;
-        newData[index] = record;
-        newData[index].key = currentKey;
-        _this.setState({ dataSource: newData, isModalVisible: false });
-      },
-      handleOktree() {
-        const newData = [..._this.state.dataSource];
-        const cData = [..._this.state.currentSelectData];
-        let lData = [];
-        if (cData.length > 0) {
-          cData.forEach(element => {
-            newData.push(element);
-          });
-        }
-        lData = reduceAndRemoveDuplicate(newData);
-        let testData = removeDuplicate(newData);
-        console.log('remove duplicate', testData);
-        console.log('pp+' + JSON.stringify(lData));
-        _this.setState({ dataSource: lData });
-        _this.setState({ isModalVisibletree: false });
-        _this.setState({ selectedRowKeys: [] });
-      },
-    };
+      }
+      //含税
+      if (row.no_unit_price && row.det_quantity && reg.test(row.tax_rate)) {
+        let a = fpMul(row.no_unit_price, row.det_quantity);
+        let b = 1 + row.tax_rate * 0.01;
+
+        newData[index].amount_tax = toFixed(fpMul(a, b), 2);
+      }
+    }
+
+    this.setState({
+      dataSource: newData,
+    });
+    console.log(newData);
+    // 含税金额合计;
+    const newarr1 = [...this.state.dataSource];
+    let newarr2 = [];
+
+    newarr2 = newarr1.filter(item => {
+      if (item.amount_tax) {
+        return item;
+      }
+    });
+    newarr2 = newarr2.map(item => {
+      return item.amount_tax;
+    });
+
+    this.setState({
+      Inputmoney1: eval(newarr2.join('+'))
+        ? toFixed(eval(newarr2.join('+')), 2)
+        : 0,
+    });
+    // 不含税金额合计;
+    const newarr3 = [...this.state.dataSource];
+    let newarr4 = [];
+
+    newarr4 = newarr3.filter(item => {
+      if (item.no_amount_tax) {
+        return item;
+      }
+    });
+    newarr4 = newarr4.map(item => {
+      return item.no_amount_tax;
+    });
+
+    this.setState({
+      Inputmoney2: eval(newarr4.join('+'))
+        ? toFixed(eval(newarr4.join('+')), 2)
+        : 0,
+    });
   },
-  //   onSearch(value: any) {
-  //     console.log(value);
-  //     const newvalue = this.state.allData;
-  //     newvalue.name = value;
 
-  //     newvalue.page = 1;
-  //     newvalue.rk_id = ['-1'];
-  //     this.setState({
-  //       allData: newvalue,
-  //     });
-  //     this.asyncSetFieldProps(newvalue);
-  //   },
-  //   onChangepage(page: any) {
-  //     const newpage = this.state.allData;
-  //     newpage.page = page;
-  //     console.log(newpage);
-  //     this.setState({
-  //       allData: newpage,
-  //     });
-  //     this.asyncSetFieldProps(newpage);
-  //     // this.getData(page);
-  //     // this.setState({
-  //     //   loading: true,
-  //     // });
-  //   },
-  //   onChangepagetree(page: any) {
-  //     const newpage = this.state.allData;
-  //     newpage.page = page;
-  //     newpage.rk_id = ['-1'];
-  //     console.log(newpage);
-  //     this.setState({
-  //       allData: newpage,
-  //     });
-  //     this.asyncSetFieldProps(newpage);
-  //   },
-  //   handleChange(row: DataType) {
-  //     this.setState({ currentEditId: row.key });
-  //   },
 
-  //   handleCancel() {
-  //     this.setState({ isModalVisible: false });
-  //     this.setState({ selectedRowKeys: [] });
-  //   },
-  //   handleCanceltree() {
-  //     this.setState({ isModalVisibletree: false });
-  //     this.setState({ selectedRowKeys: [] });
-  //   },
-
-  asyncSetFieldProps(valueData: { project_name: any }) {
+  asyncSetFieldProps(vlauedata) {
     const { form, spi } = this.props;
     const Pro_name = form.getFieldValue('Autopro');
-    valueData.project_name = Pro_name;
+    vlauedata.project_name = Pro_name;
     const TestPurField = form.getFieldInstance('TestPur');
 
     const key = TestPurField.getProp('id');
@@ -685,7 +698,7 @@ const FormField: ISwapFormField = {
       {
         key,
         bizAlias: 'TestPur',
-        extendValue: valueData,
+        extendValue: vlauedata,
         value,
       },
     ];
@@ -697,8 +710,8 @@ const FormField: ISwapFormField = {
         modifiedBizAlias: ['TestPur'], // spi接口要改动的是leaveReason的属性值
         bizAsyncData,
       })
-      .then((res: { dataList: any[] }) => {
-        let newarr: any;
+      .then(res => {
+        let newarr;
         //   表格数据
         try {
           newarr = JSON.parse(res.dataList[0].value).data;
@@ -740,7 +753,7 @@ const FormField: ISwapFormField = {
           this.setState({
             Inputmoney1: eval(newarr2.join('+'))
               ? toFixed(eval(newarr2.join('+')), 2)
-              : null,
+              : 0,
           });
           // 不含税金额合计;
 
@@ -758,7 +771,7 @@ const FormField: ISwapFormField = {
           this.setState({
             Inputmoney2: eval(newarr4.join('+'))
               ? toFixed(eval(newarr4.join('+')), 2)
-              : null,
+              : 0,
           });
         } else if (dstatus === '1') {
           this.setState({
@@ -783,7 +796,7 @@ const FormField: ISwapFormField = {
           this.setState({
             Inputmoney1: eval(newarr2.join('+'))
               ? toFixed(eval(newarr2.join('+')), 2)
-              : null,
+              : 0,
           });
           // 不含税金额合计;
 
@@ -801,7 +814,7 @@ const FormField: ISwapFormField = {
           this.setState({
             Inputmoney2: eval(newarr4.join('+'))
               ? toFixed(eval(newarr4.join('+')), 2)
-              : null,
+              : 0,
           });
           this.setState({
             dataSource: [...newarr],
@@ -816,6 +829,32 @@ const FormField: ISwapFormField = {
           });
         }
       });
+  },
+  rowClick(this, record, rowkey) {
+    const { form } = this.props;
+    const newData = [...this.state.dataSource];
+    const index = newData.findIndex(
+      item => this.state.currentEditId === item.key,
+    );
+    const currentKey = newData[index].key;
+    newData[index] = record;
+    newData[index].key = currentKey;
+    this.setState({ dataSource: newData, isModalVisible: false });
+  },
+  handleOktree() {
+    const newData = [...this.state.dataSource];
+    const cData = [...this.state.currentSelectData];
+    let lData = [];
+    if (cData.length > 0) {
+      cData.forEach(element => {
+        newData.push(element);
+      });
+    }
+    lData = this.dupRemoval(newData);
+    console.log('pp+' + JSON.stringify(lData));
+    this.setState({ dataSource: lData });
+    this.setState({ isModalVisibletree: false });
+    this.setState({ selectedRowKeys: [] });
   },
   handleOk() {
     this.setState({ dstatus: '3' });
@@ -832,11 +871,24 @@ const FormField: ISwapFormField = {
     });
     this.setState({ selectedRowKeys: [] });
   },
-  handleCancel() {
-    this.setState({ isModalVisible: false });
-    this.setState({ selectedRowKeys: [] });
+  dupRemoval(arr) {
+    //arr是传入的数组
+    var nn = [...arr];
+    let obj = {};
+    let peon = nn.reduce((cur, next) => {
+      //根据 属性scac + 属性disPlayName 判断去重
+      obj[next.name + next.unit + next.size]
+        ? ''
+        : (obj[next.name + next.unit + next.size] = true && cur.push(next));
+      return cur;
+    }, []); //设置cur默认类型为数组，并且初始值为空的数组
+    console.log(peon);
+    return peon;
   },
-
+  unique(arr) {
+    const res = new Map();
+    return arr.filter(arr => !res.has(arr.id) && res.set(arr.id, 1));
+  },
   fieldDidUpdate() {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
@@ -872,7 +924,7 @@ const FormField: ISwapFormField = {
       {
         title: '物资名称',
         dataIndex: 'name',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.name}>
             <span>{record.name}</span>
           </Tooltip>
@@ -881,7 +933,7 @@ const FormField: ISwapFormField = {
       {
         title: '单位',
         dataIndex: 'unit',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.unit}>
             <span>{record.unit}</span>
           </Tooltip>
@@ -890,7 +942,7 @@ const FormField: ISwapFormField = {
       {
         title: '规格型号',
         dataIndex: 'size',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.size}>
             <span>{record.size}</span>
           </Tooltip>
@@ -899,7 +951,7 @@ const FormField: ISwapFormField = {
       {
         title: '数量',
         dataIndex: 'det_quantity',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.det_quantity}>
             <span>{record.det_quantity}</span>
           </Tooltip>
@@ -908,7 +960,7 @@ const FormField: ISwapFormField = {
       {
         title: '不含税单价(元)',
         dataIndex: 'no_unit_price',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.no_unit_price}>
             <span>{record.no_unit_price}</span>
           </Tooltip>
@@ -917,7 +969,7 @@ const FormField: ISwapFormField = {
       {
         title: '含税单价(元)',
         dataIndex: 'unit_price',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.unit_price}>
             <span>{record.unit_price}</span>
           </Tooltip>
@@ -926,7 +978,7 @@ const FormField: ISwapFormField = {
       {
         title: '税率(%)',
         dataIndex: 'tax_rate',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.tax_rate}>
             <span>{record.tax_rate}</span>
           </Tooltip>
@@ -934,9 +986,9 @@ const FormField: ISwapFormField = {
       },
 
       {
-        title: '税额(元)',
+        title: '税额',
         dataIndex: 'tax_amount',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.tax_amount}>
             <span>{record.tax_amount}</span>
           </Tooltip>
@@ -945,7 +997,7 @@ const FormField: ISwapFormField = {
       {
         title: '不含税金额(元)',
         dataIndex: 'no_amount_tax',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.no_amount_tax}>
             <span>{record.no_amount_tax}</span>
           </Tooltip>
@@ -954,7 +1006,7 @@ const FormField: ISwapFormField = {
       {
         title: '含税金额(元)',
         dataIndex: 'amount_tax',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.amount_tax}>
             <span>{record.amount_tax}</span>
           </Tooltip>
@@ -965,7 +1017,7 @@ const FormField: ISwapFormField = {
       {
         title: '物资名称',
         dataIndex: 'name',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.name}>
             <span>{record.name}</span>
           </Tooltip>
@@ -974,7 +1026,7 @@ const FormField: ISwapFormField = {
       {
         title: '单位',
         dataIndex: 'unit',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.unit}>
             <span>{record.unit}</span>
           </Tooltip>
@@ -983,7 +1035,7 @@ const FormField: ISwapFormField = {
       {
         title: '规格型号',
         dataIndex: 'size',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.size}>
             <span>{record.size}</span>
           </Tooltip>
@@ -993,7 +1045,7 @@ const FormField: ISwapFormField = {
         title: '数量',
         dataIndex: 'det_quantity',
         editable: true,
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.det_quantity}>
             <span>{record.det_quantity}</span>
           </Tooltip>
@@ -1003,7 +1055,7 @@ const FormField: ISwapFormField = {
         title: '不含税单价(元)',
         dataIndex: 'no_unit_price',
         editable: true,
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.no_unit_price}>
             <span>{record.no_unit_price}</span>
           </Tooltip>
@@ -1029,7 +1081,7 @@ const FormField: ISwapFormField = {
         ),
         dataIndex: 'unit_price',
         editable: true,
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.unit_price}>
             <span>{record.unit_price}</span>
           </Tooltip>
@@ -1039,7 +1091,7 @@ const FormField: ISwapFormField = {
         title: '税率(%)',
         dataIndex: 'tax_rate',
         editable: true,
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.tax_rate}>
             <span>{record.tax_rate}</span>
           </Tooltip>
@@ -1049,7 +1101,7 @@ const FormField: ISwapFormField = {
       {
         title: '税额(元)',
         dataIndex: 'tax_amount',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.tax_amount}>
             <span>{record.tax_amount}</span>
           </Tooltip>
@@ -1058,7 +1110,7 @@ const FormField: ISwapFormField = {
       {
         title: '不含税金额(元)',
         dataIndex: 'no_amount_tax',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.no_amount_tax}>
             <span>{record.no_amount_tax}</span>
           </Tooltip>
@@ -1067,7 +1119,7 @@ const FormField: ISwapFormField = {
       {
         title: '含税金额(元)',
         dataIndex: 'amount_tax',
-        render: (_: any, record: any) => (
+        render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.amount_tax}>
             <span>{record.amount_tax}</span>
           </Tooltip>
@@ -1078,11 +1130,11 @@ const FormField: ISwapFormField = {
         title: '操作',
         dataIndex: 'operation',
 
-        render: (_: any, record: any) =>
+        render: (_, record: any) =>
           this.state.dataSource.length >= 1 ? (
             <Popconfirm
               title="确定删除?"
-              onConfirm={() => this.methods().handleDelete(record)}
+              onConfirm={() => this.handleDelete(record)}
             >
               <a>删除</a>
             </Popconfirm>
@@ -1106,8 +1158,8 @@ const FormField: ISwapFormField = {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
-          handleSave: this.methods().handleSave,
-          handleChange: this.methods().handleChange,
+          handleSave: this.handleSave,
+          handleChange: this.handleChange,
         }),
       };
     });
@@ -1129,7 +1181,7 @@ const FormField: ISwapFormField = {
     const onExpand = () => {
       console.log('Trigger Expand');
     };
-    const Tabschange = (key: string) => {
+    const Tabschange = key => {
       console.log(key);
 
       let newpage = {
@@ -1147,7 +1199,7 @@ const FormField: ISwapFormField = {
     };
     const rowSelection = {
       selectedRowKeys,
-      onChange: (selectedRowKeys: any, selectedRows: any) => {
+      onChange: (selectedRowKeys, selectedRows) => {
         // console.log(
         //   `selectedRowKeys: ${selectedRowKeys}`,
         //   'selectedRows: ',
@@ -1181,7 +1233,7 @@ const FormField: ISwapFormField = {
         this.setState({ selectedRowKeys });
       },
     };
-    let Options = this.state.newOptine.map((station: any) => (
+    let Options = this.state.newOptine.map(station => (
       <Option key={station.key} value={station.title}>
         {station.title}
       </Option>
@@ -1204,7 +1256,7 @@ const FormField: ISwapFormField = {
     const onFinishFailed = (errorInfo: any) => {
       console.log('Failed:', errorInfo);
     };
-    const onChangetree = (value: any) => {
+    const onChangetree = value => {
       console.log(value);
       this.setState({ value });
     };
@@ -1252,7 +1304,7 @@ const FormField: ISwapFormField = {
         {' '}
         <div className="pc-custom-field-wrap">
           <div>
-            <div className="label">
+            <div className="label" style={{ color: 'red' }}>
               {required ? (
                 <span style={{ color: '#ea6d5c' }}>*</span>
               ) : (
@@ -1261,7 +1313,7 @@ const FormField: ISwapFormField = {
               {label}
             </div>
             <Input
-              onClick={this.methods().newhandleAdd}
+              onClick={this.newhandleAdd}
               readOnly
               value={this.state.detailname}
               placeholder="请选择"
@@ -1275,14 +1327,14 @@ const FormField: ISwapFormField = {
           <Input
             id="ptID"
             placeholder={placeholder}
-            onFocus={this.methods().handleChange}
+            onFocus={this.handleChange}
             value={this.state.leaveLongVal}
           />
         )} */}
           {/* {field?.props?.viewMode ? (
           field.getValue()
         ) : (
-          <Input placeholder={placeholder} onChange={this.methods().handleChange} />
+          <Input placeholder={placeholder} onChange={this.handleChange} />
         )} */}
           <div style={{ marginTop: '10px' }}>
             <Table
@@ -1295,7 +1347,7 @@ const FormField: ISwapFormField = {
               pagination={false}
             />
             <Button
-              onClick={this.methods().handleAdd}
+              onClick={this.handleAdd}
               type="primary"
               style={{ marginBottom: 16, marginTop: 16 }}
             >
@@ -1354,7 +1406,7 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.methods().onSearch}
+                  onSearch={this.onSearch}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1363,7 +1415,7 @@ const FormField: ISwapFormField = {
                     ...rowSelection,
                   }}
                   rowKey={record => record.id}
-                  columns={purchaseColumns}
+                  columns={mycolumns}
                   dataSource={this.state.listData}
                   loading={this.state.loading}
                   pagination={false}
@@ -1373,7 +1425,7 @@ const FormField: ISwapFormField = {
                   total={this.state.total2}
                   hideOnSinglePage={true}
                   className="pagination"
-                  onChange={this.methods().onChangepage}
+                  onChange={this.onChangepage}
                 />
               </TabPane>
               <TabPane tab="材料总计划" key="b">
@@ -1382,7 +1434,7 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.methods().onSearch}
+                  onSearch={this.onSearch}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1391,7 +1443,7 @@ const FormField: ISwapFormField = {
                     ...rowSelection,
                   }}
                   rowKey={record => record.id}
-                  columns={projectColumns}
+                  columns={newmycolumns}
                   dataSource={this.state.listData}
                   loading={this.state.loading}
                   pagination={false}
@@ -1401,7 +1453,7 @@ const FormField: ISwapFormField = {
                   total={this.state.total2}
                   hideOnSinglePage={true}
                   className="pagination"
-                  onChange={this.methods().onChangePage}
+                  onChange={this.onChangepage}
                 />
               </TabPane>
             </Tabs>
@@ -1413,19 +1465,19 @@ const FormField: ISwapFormField = {
             width={1000}
             visible={this.state.isModalVisibletree}
             footer={[
-              <Button key="back" onClick={this.methods().handleCancelTree}>
+              <Button key="back" onClick={this.handleCanceltree}>
                 返回
               </Button>,
               <Button
                 key="submit"
                 type="primary"
                 loading={this.state.loading}
-                onClick={this.methods().handleOktree}
+                onClick={this.handleOktree}
               >
                 确定
               </Button>,
             ]}
-            onCancel={this.methods().handleCancelTree}
+            onCancel={this.handleCanceltree}
           >
             <Layout>
               <Sider className="newside_new">
@@ -1444,13 +1496,9 @@ const FormField: ISwapFormField = {
                     allowClear
                     enterButton="搜索"
                     size="large"
-                    onSearch={this.methods().onSearch}
+                    onSearch={this.onSearch}
                   />
-                  <Button
-                    onClick={this.methods().newAdd}
-                    size="large"
-                    type="primary"
-                  >
+                  <Button onClick={this.newAdd} size="large" type="primary">
                     新增
                   </Button>
                 </div>
@@ -1461,7 +1509,7 @@ const FormField: ISwapFormField = {
                     ...rowSelection,
                   }}
                   rowKey={record => record.id}
-                  columns={purchaseItemColumns}
+                  columns={mycolumnstree}
                   dataSource={this.state.treelistData}
                   loading={this.state.loading}
                   pagination={false}
@@ -1471,7 +1519,7 @@ const FormField: ISwapFormField = {
                   total={this.state.total3}
                   hideOnSinglePage={true}
                   className="pagination"
-                  onChange={this.methods().onChangePageTree}
+                  onChange={this.onChangepagetree}
                 />
               </Content>
             </Layout>
@@ -1479,7 +1527,7 @@ const FormField: ISwapFormField = {
           {/* 新增个 */}
           <Modal
             className="newModal_class"
-            onCancel={this.methods().handleNewCancel}
+            onCancel={this.handlenewCancel}
             visible={this.state.visibleModal}
             width={1000}
             title="新增"
@@ -1531,7 +1579,7 @@ const FormField: ISwapFormField = {
                 <Button type="primary" htmlType="submit">
                   确认
                 </Button>
-                <Button type="primary" onClick={this.methods().handleNewCancel}>
+                <Button type="primary" onClick={this.handlenewCancel}>
                   取消
                 </Button>
               </Form.Item>

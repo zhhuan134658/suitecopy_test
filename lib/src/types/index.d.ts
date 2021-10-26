@@ -81,6 +81,9 @@ export interface IFormField {
     fieldDidMount?: () => void;
     fieldDidUpdate?: () => void;
     fieldRender?: () => React.ReactElement;
+    getInitialState?: () => any;
+    asyncSetFieldProps?: (valueData: any) => void;
+    methods?: () => any;
 }
 export interface ISuiteDesignerSetter {
     props?: IProps;

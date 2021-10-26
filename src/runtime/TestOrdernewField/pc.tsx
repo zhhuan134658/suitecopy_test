@@ -1,42 +1,3 @@
-// import React from 'react';
-// import { Input } from 'antd';
-// import { IFormField } from '../../types';
-
-// import './pc.less';
-
-// interface ISwapFormField extends IFormField {
-//   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-// }
-
-// /**
-//  * 自定义控件运行态 PC 视图
-//  */
-// const FormField: ISwapFormField = {
-//   handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-//     const { form } = this.props;
-//     form.setFieldValue('TestOrdernew', e.target.value);
-//   },
-
-//   fieldRender() {
-//     const { form } = this.props;
-//     const field = form.getFieldInstance('TestOrdernew');
-//     const label = form.getFieldProp('TestOrdernew', 'label');
-//     const placeholder = form.getFieldProp('TestOrdernew', 'placeholders');
-
-//     return (
-//       <div className="pc-custom-field-wrap">
-//         <div className="label">{label}</div>
-//         {field.getProp('viewMode') ? (
-//           field.getValue()
-//         ) : (
-//           <Input placeholder={placeholder} onChange={this.handleChange} />
-//         )}
-//       </div>
-//     );
-//   },
-// };
-
-// export default Fo,rmField;
 import { Pagination } from 'antd';
 import { Tree } from 'antd';
 const { DirectoryTree } = Tree;
@@ -64,6 +25,7 @@ import { IFormField } from '../../types';
 const { Column } = Table;
 import { FormInstance } from 'antd/lib/form';
 const { TabPane } = Tabs;
+import { toFixed } from '../../utils/fpOperations'
 
 import './pc.less';
 const mycolumns = [
@@ -152,7 +114,7 @@ interface EditableCellProps {
   children: React.ReactNode;
   dataIndex: keyof Item;
   record: Item;
-  handleSave: (record: Item) => void;
+  handleSave: (record: Item,value:any) => void;
   handleChange: (record: Item) => void;
 }
 
@@ -168,7 +130,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -474,8 +436,12 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
-      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+      Inputmoney1: eval(newarr2.join('+'))
+        ? toFixed(eval(newarr2.join('+')), 2)
+        : null,
+      Inputmoney2: eval(newarr4.join('+'))
+        ? toFixed(eval(newarr4.join('+')), 2)
+        : null,
     });
   },
   newhandleAdd() {
@@ -525,7 +491,7 @@ const FormField: ISwapFormField = {
       isModalVisibletree: true,
     });
   },
-  handleSave(row: DataType, values) {
+  handleSave(row: DataType, values:any) {
     const { form } = this.props;
     const newData = [...this.state.dataSource];
     const reg = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/;
@@ -701,7 +667,9 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
+      Inputmoney1: eval(newarr2.join('+'))
+        ? toFixed(eval(newarr2.join('+')), 2)
+        : null,
     });
     // 不含税金额合计;
     const newarr3 = [...this.state.dataSource];
@@ -717,7 +685,9 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+      Inputmoney2: eval(newarr4.join('+'))
+        ? toFixed(eval(newarr4.join('+')), 2)
+        : null,
     });
 
     // if (this.state.Inputmoney2) {
@@ -839,7 +809,9 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney1: eval(newarr2.join('+')).toFixed(2),
+            Inputmoney1: eval(newarr2.join('+'))
+              ? toFixed(eval(newarr2.join('+')), 2)
+              : null,
           });
           // 不含税金额合计;
 
@@ -855,7 +827,9 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+            Inputmoney2: eval(newarr4.join('+'))
+              ? toFixed(eval(newarr4.join('+')), 2)
+              : null,
           });
         } else if (dstatus === '1') {
           this.setState({
@@ -879,7 +853,9 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney1: eval(newarr2.join('+')).toFixed(2),
+            Inputmoney1: eval(newarr2.join('+'))
+              ? toFixed(eval(newarr2.join('+')), 2)
+              : null,
           });
           // 不含税金额合计;
 
@@ -895,7 +871,9 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+            Inputmoney2: eval(newarr4.join('+'))
+              ? toFixed(eval(newarr4.join('+')), 2)
+              : null,
           });
           this.setState({
             dataSource: [...newarr],

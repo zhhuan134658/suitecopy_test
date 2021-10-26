@@ -1,9 +1,5 @@
-import { IFormField } from '../../types';
+import { ISwapFormField } from '../../types/TestPurField/interface';
 import './pc.less';
-interface ISwapFormField extends IFormField {
-    handleOk: () => void;
-    handleCancel: () => void;
-}
 /**
  * 自定义控件运行态 PC 视图
  */
