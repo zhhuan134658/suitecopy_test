@@ -7,8 +7,8 @@ export default {
   "description": "筑快科技材料入库套件开发",
   "icon": "",
   "props": {
-    "bizType": "isv.zhukuai.warehousing",
-    "bizAlias": "isv.zhukuai.warehousing",
+    "bizType": "isv.zhukuai.zkoatiaoshi",
+    "bizAlias": "isv.zhukuai.zkoatiaoshi",
     "extract": true,
     "isThirdSuite": true,
     "hiddenReason": false
