@@ -82,7 +82,7 @@ export interface IFormField {
     fieldDidUpdate?: () => void;
     fieldRender?: () => React.ReactElement;
     getInitialState?: () => any;
-    asyncSetFieldProps?: (valueData: any) => void;
+    asyncSetFieldProps?: (valueData: any, type?: any) => void;
     methods?: () => any;
 }
 export interface ISuiteDesignerSetter {

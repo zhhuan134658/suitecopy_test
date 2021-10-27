@@ -54,6 +54,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -77,6 +78,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -100,6 +102,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -123,6 +126,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -146,6 +150,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -169,6 +174,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -195,6 +201,7 @@ declare const _default: {
                 commonBizType?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -218,6 +225,7 @@ declare const _default: {
                 commonBizType?: undefined;
                 spread?: undefined;
                 options?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -230,6 +238,34 @@ declare const _default: {
                 required: boolean;
                 placeholder: string;
                 label: string;
+                options: {
+                    key: string;
+                    value: string;
+                }[];
+                id?: undefined;
+                fields?: undefined;
+                dataSource?: undefined;
+                notUpper?: undefined;
+                choice?: undefined;
+                format?: undefined;
+                commonBizType?: undefined;
+                spread?: undefined;
+                disabled?: undefined;
+                maxLength?: undefined;
+                asyncCondition?: undefined;
+                actionName?: undefined;
+                statField?: undefined;
+                formula?: undefined;
+            };
+            children?: undefined;
+        } | {
+            componentName: string;
+            props: {
+                bizAlias: string;
+                required: boolean;
+                placeholder: string;
+                label: string;
+                asyncCondition: boolean;
                 options: {
                     key: string;
                     value: string;
@@ -267,6 +303,7 @@ declare const _default: {
                 spread?: undefined;
                 options?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -290,6 +327,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -318,6 +356,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 formula?: undefined;
             };
             children: ({
@@ -378,6 +417,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
             };
@@ -405,6 +445,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 formula?: undefined;
             };
             children: ({
@@ -466,6 +507,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 formula?: undefined;
             };
             children: ({
@@ -505,6 +547,7 @@ declare const _default: {
                 options?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -528,6 +571,7 @@ declare const _default: {
                 spread?: undefined;
                 options?: undefined;
                 disabled?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;
@@ -554,6 +598,7 @@ declare const _default: {
                 commonBizType?: undefined;
                 disabled?: undefined;
                 maxLength?: undefined;
+                asyncCondition?: undefined;
                 actionName?: undefined;
                 statField?: undefined;
                 formula?: undefined;

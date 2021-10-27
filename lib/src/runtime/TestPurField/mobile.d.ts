@@ -1,5 +1,5 @@
 import 'antd-mobile/dist/antd-mobile.css';
-import { IFormField } from '../../types';
 import './mobile.less';
-declare const FormField: IFormField;
+import { ISwapFormField } from '../../types/TestPurField/interface';
+declare const FormField: ISwapFormField;
 export default FormField;
