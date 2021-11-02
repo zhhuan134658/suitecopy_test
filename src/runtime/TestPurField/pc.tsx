@@ -1357,7 +1357,7 @@ const FormField: ISwapFormField = {
                   onSearch={this.methods().onSearch}
                 />
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '350px' }}
                   rowSelection={{
                     type: 'radio',
                     ...rowSelection,
@@ -1385,7 +1385,7 @@ const FormField: ISwapFormField = {
                   onSearch={this.methods().onSearch}
                 />
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '350px' }}
                   rowSelection={{
                     type: 'radio',
                     ...rowSelection,
@@ -1412,6 +1412,7 @@ const FormField: ISwapFormField = {
             title="选择物资"
             width={1000}
             visible={this.state.isModalVisibletree}
+            className="limited-height"
             footer={[
               <Button key="back" onClick={this.methods().handleCancelTree}>
                 返回
@@ -1428,7 +1429,7 @@ const FormField: ISwapFormField = {
             onCancel={this.methods().handleCancelTree}
           >
             <Layout>
-              <Sider className="newside_new">
+              <Sider className="newside_new limited-height">
                 <Tree
                   defaultExpandedKeys={['0']}
                   blockNode
@@ -1455,7 +1456,7 @@ const FormField: ISwapFormField = {
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '350px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

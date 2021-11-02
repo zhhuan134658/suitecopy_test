@@ -82,151 +82,151 @@ const Suite = createReactClass({
         <div>
           {this.props.form.getFields().map(field => {
             if (field.props.commonBizType === 'SelectProField' || field.props.commonBizType === 'SelectPro') {
-              return <SelectProField {...this.props} />;
+              return <SelectProField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectProtwoField' || field.props.commonBizType === 'SelectProtwo') {
-              return <SelectProtwoField {...this.props} />;
+              return <SelectProtwoField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectTbproField' || field.props.commonBizType === 'SelectTbpro') {
-              return <SelectTbproField {...this.props} />;
+              return <SelectTbproField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectDepositField' || field.props.commonBizType === 'SelectDeposit') {
-              return <SelectDepositField {...this.props} />;
+              return <SelectDepositField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectHeField' || field.props.commonBizType === 'SelectHe') {
-              return <SelectHeField {...this.props} />;
+              return <SelectHeField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectRelatedField' || field.props.commonBizType === 'SelectRelated') {
-              return <SelectRelatedField {...this.props} />;
+              return <SelectRelatedField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectHeshouField' || field.props.commonBizType === 'SelectHeshou') {
-              return <SelectHeshouField {...this.props} />;
+              return <SelectHeshouField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectLeaseField' || field.props.commonBizType === 'SelectLease') {
-              return <SelectLeaseField {...this.props} />;
+              return <SelectLeaseField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectZuField' || field.props.commonBizType === 'SelectZu') {
-              return <SelectZuField {...this.props} />;
+              return <SelectZuField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectFenField' || field.props.commonBizType === 'SelectFen') {
-              return <SelectFenField {...this.props} />;
+              return <SelectFenField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectConField' || field.props.commonBizType === 'SelectCon') {
-              return <SelectConField {...this.props} />;
+              return <SelectConField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectjiaField' || field.props.commonBizType === 'Selectjia') {
-              return <SelectjiaField {...this.props} />;
+              return <SelectjiaField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectLaoField' || field.props.commonBizType === 'SelectLao') {
-              return <SelectLaoField {...this.props} />;
+              return <SelectLaoField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectSpoField' || field.props.commonBizType === 'SelectSpo') {
-              return <SelectSpoField {...this.props} />;
+              return <SelectSpoField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelecTickeField' || field.props.commonBizType === 'SelecTicke') {
-              return <SelecTickeField {...this.props} />;
+              return <SelecTickeField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelecTickefaField' || field.props.commonBizType === 'SelecTickefa') {
-              return <SelecTickefaField {...this.props} />;
+              return <SelecTickefaField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestMaterField' || field.props.commonBizType === 'TestMater') {
-              return <TestMaterField {...this.props} />;
+              return <TestMaterField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestCollectionField' || field.props.commonBizType === 'TestCollection') {
-              return <TestCollectionField {...this.props} />;
+              return <TestCollectionField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestLabourField' || field.props.commonBizType === 'TestLabour') {
-              return <TestLabourField {...this.props} />;
+              return <TestLabourField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestSubconField' || field.props.commonBizType === 'TestSubcon') {
-              return <TestSubconField {...this.props} />;
+              return <TestSubconField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestRegistField' || field.props.commonBizType === 'TestRegist') {
-              return <TestRegistField {...this.props} />;
+              return <TestRegistField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'SelectAccField' || field.props.commonBizType === 'SelectAcc') {
-              return <SelectAccField {...this.props} />;
+              return <SelectAccField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'CorpSupplierField' || field.props.commonBizType === 'CorpSupplier') {
-              return <CorpSupplierField {...this.props} />;
+              return <CorpSupplierField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'CorpSupplieryiField' || field.props.commonBizType === 'CorpSupplieryi') {
-              return <CorpSupplieryiField {...this.props} />;
+              return <CorpSupplieryiField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'CorpHouseField' || field.props.commonBizType === 'CorpHouse') {
-              return <CorpHouseField {...this.props} />;
+              return <CorpHouseField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'PositionDesField' || field.props.commonBizType === 'PositionDes') {
-              return <PositionDesField {...this.props} />;
+              return <PositionDesField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestBiddingField' || field.props.commonBizType === 'TestBidding') {
-              return <TestBiddingField {...this.props} />;
+              return <TestBiddingField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestPlanField' || field.props.commonBizType === 'TestPlan') {
-              return <TestPlanField {...this.props} />;
+              return <TestPlanField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestOrderField' || field.props.commonBizType === 'TestOrder') {
-              return <TestOrderField {...this.props} />;
+              return <TestOrderField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestOrdernewField' || field.props.commonBizType === 'TestOrdernew') {
-              return <TestOrdernewField {...this.props} />;
+              return <TestOrdernewField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestSheField' || field.props.commonBizType === 'TestShe') {
-              return <TestSheField {...this.props} />;
+              return <TestSheField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestMaterialField' || field.props.commonBizType === 'TestMaterial') {
-              return <TestMaterialField {...this.props} />;
+              return <TestMaterialField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestApplicationField' || field.props.commonBizType === 'TestApplication') {
-              return <TestApplicationField {...this.props} />;
+              return <TestApplicationField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestSetField' || field.props.commonBizType === 'TestSet') {
-              return <TestSetField {...this.props} />;
+              return <TestSetField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestPurField' || field.props.commonBizType === 'TestPur') {
-              return <TestPurField {...this.props} />;
+              return <TestPurField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestExpeField' || field.props.commonBizType === 'TestExpe') {
-              return <TestExpeField {...this.props} />;
+              return <TestExpeField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestCinField' || field.props.commonBizType === 'TestCin') {
-              return <TestCinField {...this.props} />;
+              return <TestCinField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestOutField' || field.props.commonBizType === 'TestOut') {
-              return <TestOutField {...this.props} />;
+              return <TestOutField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestCunField' || field.props.commonBizType === 'TestCun') {
-              return <TestCunField {...this.props} />;
+              return <TestCunField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestLeaseField' || field.props.commonBizType === 'TestLease') {
-              return <TestLeaseField {...this.props} />;
+              return <TestLeaseField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestLeconField' || field.props.commonBizType === 'TestLecon') {
-              return <TestLeconField {...this.props} />;
+              return <TestLeconField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestMachineryField' || field.props.commonBizType === 'TestMachinery') {
-              return <TestMachineryField {...this.props} />;
+              return <TestMachineryField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestDemandField' || field.props.commonBizType === 'TestDemand') {
-              return <TestDemandField {...this.props} />;
+              return <TestDemandField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestInspecField' || field.props.commonBizType === 'TestInspec') {
-              return <TestInspecField {...this.props} />;
+              return <TestInspecField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestMainField' || field.props.commonBizType === 'TestMain') {
-              return <TestMainField {...this.props} />;
+              return <TestMainField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestOliField' || field.props.commonBizType === 'TestOli') {
-              return <TestOliField {...this.props} />;
+              return <TestOliField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestScienceField' || field.props.commonBizType === 'TestScience') {
-              return <TestScienceField {...this.props} />;
+              return <TestScienceField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'TestOpeningField' || field.props.commonBizType === 'TestOpening') {
-              return <TestOpeningField {...this.props} />;
+              return <TestOpeningField {...this.props}  bizAlias={field.props.bizAlias} />;
             }
 if (field.props.commonBizType === 'AntdUploadFiled' || field.props.commonBizType === 'AntdUpload') {
-              return <AntdUploadFiled {...this.props} />;
+              return <AntdUploadFiled {...this.props}  bizAlias={field.props.bizAlias} />;
             }
             return field.renderComponent();
           })}
