@@ -175,7 +175,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -364,13 +364,13 @@ const FormField: ISwapFormField = {
   onGenderChange1(value, key) {
     console.log(key);
   },
-  onSearch(value) {
+  onSearch(value, type: string) {
     console.log(value);
     const newvalue = this.state.allData;
     newvalue.name = value;
 
     newvalue.page = 1;
-    newvalue.rk_id = ['-1'];
+    newvalue.rk_id = [type];
     this.setState({
       allData: newvalue,
     });
@@ -404,7 +404,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestCin', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -1095,16 +1095,16 @@ const FormField: ISwapFormField = {
       console.log('发起页：fieldDidUpdate');
 
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.detailname;
       editData.detailedData = this.state.dataSource;
@@ -1237,6 +1237,26 @@ const FormField: ISwapFormField = {
           </Tooltip>
         ),
       },
+      {
+        title: '已入库量',
+        dataIndex: 'quantity_rk',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
+          </Tooltip>
+        ),
+      },
     ];
     const etColumns = [
       {
@@ -1277,7 +1297,24 @@ const FormField: ISwapFormField = {
         ),
       },
       {
-        title: '不含税单价(元)',
+        title: (
+          <div>
+            不含税单价(元)
+            <Tooltip
+              placement="top"
+              title={
+                <div>
+                  <span>
+                    含税单价=不含税单价*（1+税率）,含税单价/不含税单价二选一填入
+                  </span>
+                </div>
+              }
+            >
+              　<QuestionCircleOutlined />　
+              {/* <a-icon type="info-circle" /> */}
+            </Tooltip>
+          </div>
+        ),
         dataIndex: 'no_unit_price',
         editable: true,
         render: (_, record: any) => (
@@ -1295,7 +1332,9 @@ const FormField: ISwapFormField = {
               placement="top"
               title={
                 <div>
-                  <span>含税单价=不含税单价*（1+税率）</span>
+                  <span>
+                    含税单价=不含税单价*（1+税率）,含税单价/不含税单价二选一填入
+                  </span>
                 </div>
               }
             >
@@ -1348,6 +1387,26 @@ const FormField: ISwapFormField = {
         render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.amount_tax}>
             <span>{record.amount_tax}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '已入库量',
+        dataIndex: 'quantity_rk',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
           </Tooltip>
         ),
       },
@@ -1537,8 +1596,8 @@ const FormField: ISwapFormField = {
       console.log('详情', value);
       const {
         detailname = '',
-        nomoney = '',
-        hanmoney = '',
+        nomoney = 0,
+        hanmoney = 0,
         detailedData = [],
       } = value;
       return (
@@ -1567,11 +1626,15 @@ const FormField: ISwapFormField = {
           <div style={{ margin: '10px' }} className="label">
             不含税金额合计(元)
           </div>
-          <div style={{ margin: '10px' }}>{nomoney}</div>
+          <div style={{ margin: '10px' }}>
+            {nomoney ? Number(nomoney).toFixed(2) : ''}
+          </div>
           <div style={{ margin: '10px' }} className="label">
             含税金额合计(元)
           </div>
-          <div style={{ margin: '10px' }}>{hanmoney}</div>
+          <div style={{ margin: '10px' }}>
+            {hanmoney ? Number(hanmoney).toFixed(2) : ''}
+          </div>
         </div>
       );
     }
@@ -1681,7 +1744,14 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.onSearch}
+                  onSearch={val => {
+                    this.onSearch(val, 'c');
+                  }}
+                  onChange={e => {
+                    if (e.target.value === '') {
+                      this.onSearch('', 'c');
+                    }
+                  }}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1710,7 +1780,14 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.onSearch}
+                  onSearch={val => {
+                    this.onSearch(val, 'd');
+                  }}
+                  onChange={e => {
+                    if (e.target.value === '') {
+                      this.onSearch('', 'd');
+                    }
+                  }}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1739,7 +1816,14 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.onSearch}
+                  onSearch={val => {
+                    this.onSearch(val, 'a');
+                  }}
+                  onChange={e => {
+                    if (e.target.value === '') {
+                      this.onSearch('', 'a');
+                    }
+                  }}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1768,7 +1852,14 @@ const FormField: ISwapFormField = {
                   allowClear
                   enterButton="搜索"
                   size="large"
-                  onSearch={this.onSearch}
+                  onSearch={val => {
+                    this.onSearch(val, 'b');
+                  }}
+                  onChange={e => {
+                    if (e.target.value === '') {
+                      this.onSearch('', 'b');
+                    }
+                  }}
                 />
                 <Table
                   scroll={{ x: '1500px' }}
@@ -1796,6 +1887,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物资"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisibletree}
             footer={[
@@ -1830,14 +1922,21 @@ const FormField: ISwapFormField = {
                     allowClear
                     enterButton="搜索"
                     size="large"
-                    onSearch={this.onSearch}
+                    onSearch={val => {
+                      this.onSearch(val, '-1');
+                    }}
+                    onChange={e => {
+                      if (e.target.value === '') {
+                        this.onSearch('', '-1');
+                      }
+                    }}
                   />
                   <Button onClick={this.newAdd} size="large" type="primary">
                     新增
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

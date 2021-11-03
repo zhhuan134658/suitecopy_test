@@ -164,7 +164,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -381,7 +381,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestApplication', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -776,16 +776,16 @@ const FormField: ISwapFormField = {
       );
 
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: null,
+        nomoney: null,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.detailname;
       editData.detailedData = this.state.dataSource;
@@ -873,6 +873,26 @@ const FormField: ISwapFormField = {
         ),
       },
       {
+        title: '累计申请量',
+        dataIndex: 'quantity_sq',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
+          </Tooltip>
+        ),
+      },
+      {
         title: '参考价格',
         dataIndex: 'refer_price',
         render: (_, record: any) => (
@@ -949,6 +969,26 @@ const FormField: ISwapFormField = {
         ),
       },
       {
+        title: '累计申请量',
+        dataIndex: 'quantity_sq',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
+          </Tooltip>
+        ),
+      },
+      {
         title: '参考价格',
         dataIndex: 'refer_price',
         editable: true,
@@ -971,12 +1011,18 @@ const FormField: ISwapFormField = {
       {
         title: '备注',
         dataIndex: 'remarks',
-        editable: true,
-        render: (_, record: any) => (
-          <Tooltip placement="topLeft" title={record.remarks}>
-            <span>{record.remarks}</span>
-          </Tooltip>
-        ),
+        render: (_, record: any) => {
+          let rec = record;
+          return (
+            <Input
+              value={record.content}
+              placeholder="请输入"
+              onChange={e => {
+                record.content = e.target.value;
+              }}
+            />
+          );
+        },
       },
       {
         title: '操作',
@@ -1141,8 +1187,9 @@ const FormField: ISwapFormField = {
     };
     //详情
     if (this.props.runtimeProps.viewMode) {
+      console.log('VALUE');
       const value = field.getValue();
-      const { detailname = '', detailedData = [], hanmoney = '' } = value;
+      const { detailname = '', detailedData = [], hanmoney = null } = value;
       return (
         <div className="field-wrapper">
           <div className="label"> {label}</div>
@@ -1160,8 +1207,10 @@ const FormField: ISwapFormField = {
               pagination={false}
             />
           </div>
-          <div className="合计"> {label}</div>
-          <div style={{ marginTop: '10px' }}>{hanmoney}</div>
+          <div> {label}</div>
+          <div style={{ marginTop: '10px' }}>
+            {hanmoney ? Number(hanmoney).toFixed(2) : '暂无'}
+          </div>
         </div>
       );
     }
@@ -1284,6 +1333,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物资"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisibletree}
             footer={[
@@ -1325,7 +1375,7 @@ const FormField: ISwapFormField = {
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

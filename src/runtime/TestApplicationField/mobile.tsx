@@ -239,6 +239,12 @@ const FormField: IFormField = {
     this.asyncSetFieldProps(newdate);
   },
   onSearchBarChange(value) {
+    if (!value) {
+      const newData = this.state.allData;
+      newData.name = value;
+      this.asyncSetFieldProps(newData);
+    }
+
     this.setState({ SearchBarvalue: value });
   },
   //增加明细
@@ -312,16 +318,16 @@ const FormField: IFormField = {
       console.log('发起页：fieldDidUpdate');
 
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.chenkdata;
       editData.detailedData = this.state.materialList;
@@ -432,7 +438,7 @@ const FormField: IFormField = {
       const value = field.getValue();
 
       const {
-        hanmoney = '',
+        hanmoney = 0,
         nomoney = '',
         detailname = '',
         detailedData = [],
@@ -476,7 +482,7 @@ const FormField: IFormField = {
               <div className="m-field-view">
                 <label className="m-field-view-label">合计总额</label>
                 <div className="m-field-view-value">
-                  <span>{hanmoney}</span>
+                  <span>{hanmoney ? Number(hanmoney).toFixed(2) : ''}</span>
                 </div>
               </div>
             </div>

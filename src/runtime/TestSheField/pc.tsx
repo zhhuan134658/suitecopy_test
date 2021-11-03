@@ -1,4 +1,43 @@
+//采购订单-筑快OA
+// import React from 'react';
+// import { Input } from 'antd';
+// import { IFormField } from '../../types';
 
+// import './pc.less';
+
+// interface ISwapFormField extends IFormField {
+//   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+// }
+
+// /**
+//  * 自定义控件运行态 PC 视图
+//  */
+// const FormField: ISwapFormField = {
+//   handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+//     const { form } = this.props;
+//     form.setFieldValue('TestShe', e.target.value);
+//   },
+
+//   fieldRender() {
+//     const { form } = this.props;
+//     const field = form.getFieldInstance('TestShe');
+//     const label = form.getFieldProp('TestShe', 'label');
+//     const placeholder = form.getFieldProp('TestShe', 'placeholders');
+
+//     return (
+//       <div className="pc-custom-field-wrap">
+//         <div className="label">{label}</div>
+//         {field.getProp('viewMode') ? (
+//           field.getValue()
+//         ) : (
+//           <Input placeholder={placeholder} onChange={this.handleChange} />
+//         )}
+//       </div>
+//     );
+//   },
+// };
+
+// export default Fo,rmField;
 import { Pagination } from 'antd';
 import { Tree } from 'antd';
 const { DirectoryTree } = Tree;
@@ -106,7 +145,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -274,7 +313,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestShe', e.target.value);
     // document.getElementsByClassName('ptID').blur();

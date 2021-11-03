@@ -152,7 +152,7 @@ interface EditableCellProps {
   children: React.ReactNode;
   dataIndex: keyof Item;
   record: Item;
-  handleSave: (record: Item) => void;
+  handleSave: (record: Item, type: any) => void;
   handleChange: (record: Item) => void;
 }
 
@@ -168,7 +168,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -372,9 +372,8 @@ const FormField: ISwapFormField = {
     console.log(value);
     const newvalue = this.state.allData;
     newvalue.name = value;
-
     newvalue.page = 1;
-    newvalue.rk_id = [];
+    newvalue.rk_id = ['a'];
     this.setState({
       allData: newvalue,
     });
@@ -408,7 +407,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestOrder', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -1154,16 +1153,16 @@ const FormField: ISwapFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.detailname;
       editData.detailedData = this.state.dataSource;
@@ -1295,6 +1294,26 @@ const FormField: ISwapFormField = {
           </Tooltip>
         ),
       },
+      {
+        title: '已入库量',
+        dataIndex: 'quantity_rk',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
+          </Tooltip>
+        ),
+      },
     ];
     const etColumns = [
       {
@@ -1336,7 +1355,24 @@ const FormField: ISwapFormField = {
         ),
       },
       {
-        title: '不含税单价(元)',
+        title: (
+          <div>
+            不含税单价(元)
+            <Tooltip
+              placement="top"
+              title={
+                <div>
+                  <span>
+                    含税单价=不含税单价*（1+税率）,含税单价/不含税单价二选一填入
+                  </span>
+                </div>
+              }
+            >
+              　<QuestionCircleOutlined />　
+              {/* <a-icon type="info-circle" /> */}
+            </Tooltip>
+          </div>
+        ),
         dataIndex: 'no_unit_price',
         editable: true,
         render: (_, record: any) => (
@@ -1354,7 +1390,9 @@ const FormField: ISwapFormField = {
               placement="top"
               title={
                 <div>
-                  <span>含税单价=不含税单价*（1+税率）</span>
+                  <span>
+                    含税单价=不含税单价*（1+税率）,含税单价/不含税单价二选一填入
+                  </span>
                 </div>
               }
             >
@@ -1410,7 +1448,26 @@ const FormField: ISwapFormField = {
           </Tooltip>
         ),
       },
+      {
+        title: '已入库量',
+        dataIndex: 'quantity_rk',
 
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_sq}>
+            <span>{record.quantity_sq}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: '总计划量',
+        dataIndex: 'quantity_zong',
+
+        render: (_, record: any) => (
+          <Tooltip placement="topLeft" title={record.quantity_zong}>
+            <span>{record.quantity_zong}</span>
+          </Tooltip>
+        ),
+      },
       {
         title: '操作',
         dataIndex: 'operation',
@@ -1577,8 +1634,8 @@ const FormField: ISwapFormField = {
     if (this.props.runtimeProps.viewMode) {
       const value = field.getValue();
       const {
-        hanmoney = '',
-        nomoney = '',
+        hanmoney = 0,
+        nomoney = 0,
         detailname = '',
         detailedData = [],
       } = value;
@@ -1610,11 +1667,15 @@ const FormField: ISwapFormField = {
           <div style={{ marginTop: '10px' }} className="label">
             不含税金额(元)
           </div>
-          <div style={{ marginTop: '10px' }}>{nomoney}</div>
+          <div style={{ marginTop: '10px' }}>
+            {nomoney ? Number(nomoney).toFixed(2) : ''}
+          </div>
           <div className="label" style={{ marginTop: '10px' }}>
             含税金额(元)
           </div>
-          <div style={{ marginTop: '10px' }}>{hanmoney}</div>
+          <div style={{ marginTop: '10px' }}>
+            {hanmoney ? Number(hanmoney).toFixed(2) : ''}
+          </div>
         </div>
       );
     }
@@ -1723,6 +1784,11 @@ const FormField: ISwapFormField = {
               enterButton="搜索"
               size="large"
               onSearch={this.onSearch}
+              onChange={e => {
+                if (e.target.value === '') {
+                  this.onSearch('');
+                }
+              }}
             />
             <Table
               scroll={{ x: '1500px' }}
@@ -1748,6 +1814,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物资"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisibletree}
             footer={[
@@ -1783,13 +1850,18 @@ const FormField: ISwapFormField = {
                     enterButton="搜索"
                     size="large"
                     onSearch={this.onSearchcd}
+                    onChange={e => {
+                      if (e.target.value === '') {
+                        this.onSearchcd('');
+                      }
+                    }}
                   />
                   <Button onClick={this.newAdd} size="large" type="primary">
                     新增
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelectiontree,

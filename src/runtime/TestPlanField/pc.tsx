@@ -149,7 +149,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -186,7 +186,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
         {/*   */}
         {/* <Input ref={inputRef} /> */}
 
-        <Input
+        <InputNumber
           className="editable-cell-value-inputNumber"
           ref={inputRef}
           onPressEnter={save}
@@ -320,7 +320,7 @@ const FormField: ISwapFormField = {
     console.log(key);
   },
   onSearch(value) {
-    console.log(value);
+    console.log('SEARCH', value);
     const newvalue = this.state.allData;
     newvalue.name = value;
     newvalue.type = 0;
@@ -344,7 +344,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestPlan', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -772,12 +772,18 @@ const FormField: ISwapFormField = {
       {
         title: '备注',
         dataIndex: 'remarks',
-        editable: true,
-        render: (_, record: any) => (
-          <Tooltip placement="topLeft" title={record.remarks}>
-            <span>{record.remarks}</span>
-          </Tooltip>
-        ),
+        render: (_, record, index) => {
+          let rec = record;
+          return (
+            <Input
+              value={record.content}
+              placeholder="请输入"
+              onChange={e => {
+                record.content = e.target.value;
+              }}
+            />
+          );
+        },
       },
 
       {
@@ -956,6 +962,7 @@ const FormField: ISwapFormField = {
           </div>
           <Modal
             title="选择物品"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisible}
             footer={[
@@ -991,13 +998,18 @@ const FormField: ISwapFormField = {
                     enterButton="搜索"
                     size="large"
                     onSearch={this.onSearch}
+                    onChange={e => {
+                      if (e.target.value === '') {
+                        this.onSearch('');
+                      }
+                    }}
                   />
                   <Button onClick={this.newAdd} size="large" type="primary">
                     新增
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

@@ -147,7 +147,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -184,7 +184,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
         {/*   */}
         {/* <Input ref={inputRef} /> */}
 
-        <Input
+        <InputNumber
           className="editable-cell-value-inputNumber"
           ref={inputRef}
           onPressEnter={save}
@@ -339,7 +339,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestDemand', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -569,15 +569,15 @@ const FormField: ISwapFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
 
       editData.detailedData = this.state.dataSource;
@@ -705,12 +705,18 @@ const FormField: ISwapFormField = {
       {
         title: '备注',
         dataIndex: 'remarks',
-        editable: true,
-        render: (_, record: any) => (
-          <Tooltip placement="topLeft" title={record.remarks}>
-            <span>{record.remarks}</span>
-          </Tooltip>
-        ),
+        render: (_, record, index) => {
+          let rec = record;
+          return (
+            <Input
+              value={record.content}
+              placeholder="请输入"
+              onChange={e => {
+                record.content = e.target.value;
+              }}
+            />
+          );
+        },
       },
 
       {
@@ -889,6 +895,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物品"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisible}
             footer={[
@@ -930,7 +937,7 @@ const FormField: ISwapFormField = {
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

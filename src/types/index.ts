@@ -1,9 +1,3 @@
-/*
- * @Author: NorthWind
- * @Date: 2021-10-26 09:51:10
- * @Last Modified by: NorthWind
- * @Last Modified time: 2021-10-26 16:24:29
- */
 import React from 'react';
 import { IValidationRule } from './Validator';
 
@@ -126,9 +120,6 @@ export interface IFormField {
   fieldDidMount?: () => void;
   fieldDidUpdate?: () => void;
   fieldRender?: () => React.ReactElement;
-  getInitialState?: () => any;
-  asyncSetFieldProps?: (valueData: any, type?:any) => void;
-  methods?: () => any; // 任意Method wrapper
 }
 
 export interface ISuiteDesignerSetter {

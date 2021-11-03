@@ -64,6 +64,7 @@ const { Column } = Table;
 import { FormInstance } from 'antd/lib/form';
 
 import './pc.less';
+import { asyncSetProps } from '../../utils/asyncSetProps';
 const mycolumns = [
   {
     title: '物品名称',
@@ -147,7 +148,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -342,7 +343,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestMain', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -500,81 +501,38 @@ const FormField: ISwapFormField = {
   //     },
 
   asyncSetFieldProps(vlauedata) {
-    const { form, spi } = this.props;
-    const Pro_name = form.getFieldValue('Autopro');
-    vlauedata.project_name = Pro_name;
-    const TestMainField = form.getFieldInstance('TestMain');
-
-    // const leaveReasonField = form.getFieldInstance('leaveReason');
-    const key = TestMainField.getProp('id');
-    // const value = TestMainField.getValue();
-    const value = '1';
-
-    // const extendValue = TestMainField.getExtendValue();
-    const bizAsyncData = [
-      {
-        key,
-        bizAlias: 'TestMain',
-        extendValue: vlauedata,
-        value,
-      },
-    ];
-
-    // 入参和返回参考套件数据刷新集成接口文档
-
-    spi
-      .refreshData({
-        modifiedBizAlias: ['TestMain'], // spi接口要改动的是leaveReason的属性值
-        bizAsyncData,
-      })
-      .then(res => {
-        console.log(JSON.parse(res.dataList[0].value));
-
-        // this.state.listData = find(
-        //   res.dataList,
-        //   item => item.bizAlias === 'TestMain',
-        // );
-
-        // this.state.listData = res.dataList[0].value;
-
-        // this.setState({
-        //   listData: res.dataList[0].value,
-        // });
-        //   表格数据
-        let newarr;
-        //   表格数据
-        try {
-          newarr = JSON.parse(res.dataList[0].value).data;
-        } catch (e) {}
-
-        this.setState({
-          listData: [...newarr],
-          current_page: JSON.parse(res.dataList[0].value).page,
-          total2: JSON.parse(res.dataList[0].value).count,
-        });
-        //   树状图数据
-        const newtarr = JSON.parse(res.dataList[0].extendValue);
-        const newtarr1 = [
-          {
-            title: '物资类型',
-            key: '0',
-            children: newtarr,
-          },
-        ];
-        this.setState({
-          treeData: [...newtarr1],
-        });
-        if (this.state.msgdata == '1') {
-          notification.open({
-            message: JSON.parse(res.dataList[0].value).msg,
-          });
-          this.setState({
-            msgdata: '0',
-          });
-        }
-        // console.log(JSON.parse(newarr));
-        // console.log(this.state.listData);
+    const _this = this;
+    const promise = asyncSetProps(_this, vlauedata, 'TestMain');
+    promise.then(res => {
+      const dataArray = res['dataArray'];
+      const treeData = res['extendArray'];
+      this.setState({
+        listData: [...dataArray],
+        current_page: res['currentPage'],
+        total2: res['totalCount'],
       });
+      //   树状图数据
+      const newtarr1 = [
+        {
+          title: '物资类型',
+          key: '0',
+          children: treeData,
+        },
+      ];
+      this.setState({
+        treeData: [...newtarr1],
+      });
+      if (this.state.msgdata == '1') {
+        notification.open({
+          message: res['message'],
+        });
+        this.setState({
+          msgdata: '0',
+        });
+      }
+      // console.log(JSON.parse(newarr));
+      // console.log(this.state.listData);
+    });
   },
   rowClick(this, record, rowkey) {
     const { form } = this.props;
@@ -627,15 +585,15 @@ const FormField: ISwapFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
 
       editData.detailedData = this.state.dataSource;
@@ -780,8 +738,17 @@ const FormField: ISwapFormField = {
       {
         title: '维保内容',
         dataIndex: 'content',
-        render: (text, record, index) => {
-          return <Input value={text} placeholder="请输入" />;
+        render: (_, record, index) => {
+          let rec = record;
+          return (
+            <Input
+              value={record.content}
+              placeholder="请输入"
+              onChange={e => {
+                record.content = e.target.value;
+              }}
+            />
+          );
         },
       },
       {
@@ -927,11 +894,11 @@ const FormField: ISwapFormField = {
     //详情
     if (this.props.runtimeProps.viewMode) {
       const value = field.getValue();
-      const { hanmoney = '', detailedData = [] } = value;
+      const { hanmoney = 0, detailedData = [] } = value;
       return (
         <div>
           <div className="label">合计</div>
-          <div>{hanmoney}</div>
+          <div>{hanmoney ? Number(hanmoney).toFixed(2) : ''}</div>
           <div className="label">{label}</div>
 
           {/* <div>
@@ -1010,6 +977,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物品"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisible}
             footer={[
@@ -1051,7 +1019,7 @@ const FormField: ISwapFormField = {
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelection,

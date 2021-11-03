@@ -171,7 +171,13 @@ const FormField: IFormField = {
 
     this.asyncSetFieldProps(newdate);
   },
-  onSearchBarChange(value) {
+    onSearchBarChange(value) {
+          if (!value) {
+            const newData = this.state.allData;
+            newData.name = value;
+            this.asyncSetFieldProps(newData);
+          }
+
     this.setState({ SearchBarvalue: value });
   },
   //增加明细
@@ -254,11 +260,11 @@ const FormField: IFormField = {
       console.log('发起页：fieldDidUpdate');
 
       let editData = {
-        hanmoney: '',
+        hanmoney: 0,
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       editData.detailedData = this.state.materialList;
       const { form } = this.props;

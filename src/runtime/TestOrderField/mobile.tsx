@@ -17,6 +17,8 @@ import {
 } from 'antd-mobile';
 import { Tree } from 'antd';
 import './mobile.less';
+import { searchBarChange, searchBarSubmit } from '../../utils/searchUtils';
+import { toFixed, fpMul, fpDivide } from '../../utils/fpOperations';
 const Item = List.Item;
 
 /**
@@ -78,6 +80,7 @@ const FormField: IFormField = {
       treeData: [],
       date: now,
       checkindex: '',
+      fixedColumn: '',
       SearchBarvalue: '',
       showElem: 'none',
       showElem2: 'none',
@@ -101,7 +104,7 @@ const FormField: IFormField = {
       ],
     };
   },
-  asyncSetFieldProps(vlauedata, type) {
+  asyncSetFieldProps(vlauedata, type = 0) {
     const { form, spi } = this.props;
     const Pro_name = form.getFieldValue('Autopro');
     vlauedata.project_name = Pro_name;
@@ -278,6 +281,12 @@ const FormField: IFormField = {
     this.asyncSetFieldProps(newdate);
   },
   onSearchBarChange(value) {
+    if (!value) {
+      const newData = this.state.allData;
+      newData.name = value;
+      this.asyncSetFieldProps(newData);
+    }
+
     this.setState({ SearchBarvalue: value });
   },
   //增加明细
@@ -291,6 +300,7 @@ const FormField: IFormField = {
       no_unit_price: '',
       tax_rate: '',
       tax_amount: '',
+      unit_price: '',
       amount_tax: '',
       no_amount_tax: '',
     };
@@ -328,8 +338,12 @@ const FormField: IFormField = {
       return item.no_amount_tax;
     });
     this.setState({
-      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
-      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+      Inputmoney1: eval(newarr2.join('+'))
+        ? toFixed(eval(newarr2.join('+')), 2)
+        : null,
+      Inputmoney2: eval(newarr4.join('+'))
+        ? toFixed(eval(newarr4.join('+')), 2)
+        : null,
     });
   },
   // 两个浮点数相减
@@ -411,15 +425,29 @@ const FormField: IFormField = {
     let arrindex = e;
     let newindex = index;
     let newtype = types;
-
+    let fixedColumn = this.state.fixedColumn;
     arr[newindex][newtype] = arrindex;
     if (!reg.test(arr[newindex].tax_rate)) {
+      if (
+        !reg.test(arr[newindex].no_unit_price) &&
+        reg.test(arr[newindex].unit_price)
+      ) {
+        this.setState({
+          fixedColumn: 'unit_price',
+        });
+      }
       return this.setState({
         materialList: [...arr],
       });
     }
     switch (newtype) {
       case 'no_unit_price':
+        if (!reg.test(arr[newindex].unit_price)) {
+          this.setState({
+            fixedColumn: 'no_unit_price',
+          });
+        }
+
         if (
           reg.test(arr[newindex].no_unit_price) &&
           reg.test(arr[newindex].tax_rate)
@@ -430,8 +458,8 @@ const FormField: IFormField = {
           //     (1 + row.tax_rate * 0.01)
           //   ).toFixed(2);
           let a = 1 + arr[newindex].tax_rate * 0.01;
-          arr[newindex].unit_price = this.toFixed(
-            this.accMul(arr[newindex].no_unit_price, a),
+          arr[newindex].unit_price = toFixed(
+            fpMul(arr[newindex].no_unit_price, a),
             2,
           );
         } else if (
@@ -444,20 +472,29 @@ const FormField: IFormField = {
           //     (1 + row.tax_rate * 0.01)
           //   ).toFixed(2);
           let a = 1 + arr[newindex].tax_rate * 0.01;
-
-          arr[newindex].no_unit_price = this.toFixed(
-            this.accDiv(arr[newindex].unit_price, a),
+          arr[newindex].no_unit_price = toFixed(
+            fpDivide(arr[newindex].unit_price, a),
             2,
           );
         }
         break;
       case 'unit_price':
+        console.log(
+          'No Unit Price REGEX',
+          reg.test(arr[newindex].no_unit_price),
+        );
+        if (!reg.test(arr[newindex].no_unit_price)) {
+          console.log('change fixed column');
+          this.setState({
+            fixedColumn: 'unit_price',
+          });
+        }
+
         if (arr[newindex].unit_price && reg.test(arr[newindex].tax_rate)) {
           //   bu含税单价
           let a = 1 + arr[newindex].tax_rate * 0.01;
-
-          arr[newindex].no_unit_price = this.toFixed(
-            this.accDiv(arr[newindex].unit_price, a),
+          arr[newindex].no_unit_price = toFixed(
+            fpDivide(arr[newindex].unit_price, a),
             2,
           );
           //   newData[index].no_unit_price = (
@@ -470,8 +507,8 @@ const FormField: IFormField = {
           arr[newindex].no_unit_price
         ) {
           let a = 1 + arr[newindex].tax_rate * 0.01;
-          arr[newindex].unit_price = this.toFixed(
-            this.accMul(arr[newindex].no_unit_price, a),
+          arr[newindex].unit_price = toFixed(
+            fpMul(arr[newindex].no_unit_price, a),
             2,
           );
           //   newData[index].unit_price = (
@@ -483,8 +520,8 @@ const FormField: IFormField = {
           //   newData[index].amount_tax = (
           //     row.unit_price * row.det_quantity
           //   ).toFixed(2);
-          arr[newindex].amount_tax = this.toFixed(
-            this.accMul(arr[newindex].unit_price, arr[newindex].det_quantity),
+          arr[newindex].amount_tax = toFixed(
+            fpMul(arr[newindex].unit_price, arr[newindex].det_quantity),
             2,
           );
         }
@@ -496,12 +533,9 @@ const FormField: IFormField = {
           reg.test(arr[newindex].tax_rate)
         ) {
           let a = 1 + arr[newindex].tax_rate * 0.01;
-          let b = this.accMul(
-            arr[newindex].unit_price,
-            arr[newindex].det_quantity,
-          );
+          let b = fpMul(arr[newindex].unit_price, arr[newindex].det_quantity);
 
-          arr[newindex].no_amount_tax = this.toFixed(this.accDiv(b, a), 2);
+          arr[newindex].no_amount_tax = toFixed(fpDivide(b, a), 2);
 
           //   newData[index].no_amount_tax = (
           //     (row.unit_price * row.det_quantity) /
@@ -509,9 +543,9 @@ const FormField: IFormField = {
           //   ).toFixed(2);
           let c = arr[newindex].unit_price * arr[newindex].det_quantity;
           let d = 1 + arr[newindex].tax_rate * 0.01;
-          let e = this.accDiv(c, d);
+          let e = fpDivide(c, d);
           let f = arr[newindex].tax_rate * 0.01;
-          arr[newindex].tax_amount = this.toFixed(this.accMul(e, f), 2);
+          arr[newindex].tax_amount = toFixed(fpMul(e, f), 2);
 
           //   newData[index].tax_amount = (
           //     ((row.unit_price * row.det_quantity) / (1 + row.tax_rate * 0.01)) *
@@ -527,48 +561,73 @@ const FormField: IFormField = {
           !reg.test(arr[newindex].unit_price)
         ) {
           //   let a = 1 + row.tax_rate * 0.01;
-          //   newData[index].unit_price = this.toFixed(
-          //     this.accMul(row.no_unit_price, a, 2),
+          //   newData[index].unit_price = toFixed(
+          //     fpMul(row.no_unit_price, a, 2),
           //   );
-
-          arr[newindex].unit_price = this.toFixed(
-            arr[newindex].no_unit_price * (1 + arr[newindex].tax_rate * 0.01),
-            2,
-          );
+          console.log('FIXED COLUMN IS', this.state.fixedColumn);
+          if (this.state.fixedColumn === 'unit_price') {
+            let taxedUnitPrice = arr[newindex].unit_price;
+            let taxRate = arr[newindex].tax_rate;
+            if (taxRate) {
+              let calcedTaxFreeUnitPrice = fpDivide(
+                taxedUnitPrice,
+                1 + taxRate * 0.01,
+              );
+              arr[newindex].no_unit_price = toFixed(calcedTaxFreeUnitPrice, 2);
+            }
+          } else {
+            arr[newindex].unit_price = toFixed(
+              arr[newindex].no_unit_price * (1 + arr[newindex].tax_rate * 0.01),
+              2,
+            );
+          }
         } else if (
           !reg.test(arr[newindex].no_unit_price) &&
           arr[newindex].unit_price
         ) {
           //   let a = 1 + row.tax_rate * 0.01;
-          //   newData[index].no_unit_price = this.toFixed(
-          //     this.accDiv(row.unit_price, a),
+          //   newData[index].no_unit_price = toFixed(
+          //     fpDivide(row.unit_price, a),
           //     2,
           //   );
 
-          arr[newindex].no_unit_price = this.toFixed(
+          arr[newindex].no_unit_price = toFixed(
             arr[newindex].unit_price / (1 + arr[newindex].tax_rate * 0.01),
             2,
           );
 
-          arr[newindex].amount_tax = this.toFixed(
+          arr[newindex].amount_tax = toFixed(
             arr[newindex].unit_price * arr[newindex].det_quantity,
             2,
           );
-          arr[newindex].no_amount_tax = this.toFixed(
+          arr[newindex].no_amount_tax = toFixed(
             (arr[newindex].unit_price * arr[newindex].det_quantity) /
               (1 + arr[newindex].tax_rate * 0.01),
             2,
           );
-          arr[newindex].tax_amount = this.toFixed(
+          arr[newindex].tax_amount = toFixed(
             arr[newindex].amount_tax - arr[newindex].no_amount_tax,
             2,
           );
         } else if (arr[newindex].no_unit_price && arr[newindex].unit_price) {
-          let a = 1 + arr[newindex].tax_rate * 0.01;
-          arr[newindex].unit_price = this.toFixed(
-            this.accMul(arr[newindex].no_unit_price, a),
-            2,
-          );
+          console.log('FIXED COLUMN IS', this.state.fixedColumn);
+          if (this.state.fixedColumn === 'unit_price') {
+            let taxedUnitPrice = arr[newindex].unit_price;
+            let taxRate = arr[newindex].tax_rate;
+            if (taxRate) {
+              let calcedTaxFreeUnitPrice = fpDivide(
+                taxedUnitPrice,
+                1 + taxRate * 0.01,
+              );
+              arr[newindex].no_unit_price = calcedTaxFreeUnitPrice;
+            }
+          } else {
+            arr[newindex].unit_price = toFixed(
+              arr[newindex].no_unit_price * (1 + arr[newindex].tax_rate * 0.01),
+              2,
+            );
+          }
+
           //   newData[index].unit_price = (
           //     row.no_unit_price *
           //     (1 + row.tax_rate * 0.01)
@@ -579,24 +638,24 @@ const FormField: IFormField = {
           reg.test(arr[newindex].det_quantity) &&
           reg.test(arr[newindex].tax_rate)
         ) {
-          let a = this.accMul(
+          let a = fpMul(
             arr[newindex].no_unit_price,
             arr[newindex].det_quantity,
           );
-          let b = this.accMul(arr[newindex].tax_rate, 0.01);
-          arr[newindex].tax_amount = this.toFixed(this.accMul(a, b), 2);
+          let b = fpMul(arr[newindex].tax_rate, 0.01);
+          arr[newindex].tax_amount = toFixed(fpMul(a, b), 2);
           //   newData[index].tax_amount = (
           //     row.no_unit_price *
           //     row.det_quantity *
           //     row.tax_rate *
           //     0.01
           //   ).toFixed(2);
-          let c = this.accMul(
+          let c = fpMul(
             arr[newindex].no_unit_price,
             arr[newindex].det_quantity,
           );
           let d = 1 + arr[newindex].tax_rate * 0.01;
-          arr[newindex].amount_tax = this.toFixed(this.accMul(c, d), 2);
+          arr[newindex].amount_tax = toFixed(fpMul(c, d), 2);
           //   newData[index].amount_tax = (
           //     row.no_unit_price *
           //     row.det_quantity *
@@ -616,12 +675,9 @@ const FormField: IFormField = {
         arr[newindex].det_quantity &&
         reg.test(arr[newindex].tax_rate)
       ) {
-        let a = this.accMul(
-          arr[newindex].no_unit_price,
-          arr[newindex].det_quantity,
-        );
-        let b = this.accMul(arr[newindex].tax_rate, 0.01);
-        arr[newindex].tax_amount = this.toFixed(this.accMul(a, b), 2);
+        let a = fpMul(arr[newindex].no_unit_price, arr[newindex].det_quantity);
+        let b = fpMul(arr[newindex].tax_rate, 0.01);
+        arr[newindex].tax_amount = toFixed(fpMul(a, b), 2);
         // newData[index].tax_amount = (
         //   row.no_unit_price *
         //   row.det_quantity *
@@ -631,8 +687,8 @@ const FormField: IFormField = {
       }
       //   不含税
       if (arr[newindex].no_unit_price && arr[newindex].det_quantity) {
-        arr[newindex].no_amount_tax = this.toFixed(
-          this.accMul(arr[newindex].no_unit_price, arr[newindex].det_quantity),
+        arr[newindex].no_amount_tax = toFixed(
+          fpMul(arr[newindex].no_unit_price, arr[newindex].det_quantity),
           2,
         );
         // newData[index].no_amount_tax = (
@@ -645,13 +701,10 @@ const FormField: IFormField = {
         arr[newindex].det_quantity &&
         reg.test(arr[newindex].tax_rate)
       ) {
-        let a = this.accMul(
-          arr[newindex].no_unit_price,
-          arr[newindex].det_quantity,
-        );
+        let a = fpMul(arr[newindex].no_unit_price, arr[newindex].det_quantity);
         let b = 1 + arr[newindex].tax_rate * 0.01;
 
-        arr[newindex].amount_tax = this.toFixed(this.accMul(a, b), 2);
+        arr[newindex].amount_tax = toFixed(fpMul(a, b), 2);
         // newData[index].amount_tax = (
         //   row.no_unit_price *
         //   row.det_quantity *
@@ -683,8 +736,8 @@ const FormField: IFormField = {
     });
     this.setState({
       materialList: [...arr],
-      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
-      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
+      Inputmoney1: eval(newarr2.join('+')),
+      Inputmoney2: eval(newarr4.join('+')),
     });
     console.log('12', arr);
   },
@@ -699,16 +752,16 @@ const FormField: IFormField = {
       console.log('发起页：fieldDidUpdate');
 
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.chenkdata;
       editData.detailedData = this.state.materialList;
@@ -747,8 +800,14 @@ const FormField: IFormField = {
         <SearchBar
           value={this.state.SearchBarvalue}
           placeholder="请输入"
-          onSubmit={this.onSubmit}
-          onChange={this.onSearchBarChange}
+          onSubmit={val => {
+            const _this = this;
+            searchBarSubmit(_this, val, 1);
+          }}
+          onChange={val => {
+            const _this = this;
+            searchBarChange(_this, val, 1);
+          }}
           showCancelButton
           onCancel={() => this.setState({ showElem: 'none' })}
         />
@@ -773,8 +832,14 @@ const FormField: IFormField = {
         <SearchBar
           value={this.state.SearchBarvalue}
           placeholder="请输入"
-          onSubmit={this.onSubmit}
-          onChange={this.onSearchBarChange}
+          onSubmit={val => {
+            const _this = this;
+            searchBarSubmit(_this, val, 2);
+          }}
+          onChange={val => {
+            const _this = this;
+            searchBarChange(_this, val, 2);
+          }}
           showCancelButton
           onCancel={() => this.setState({ showElem3: 'none' })}
         />
@@ -800,8 +865,14 @@ const FormField: IFormField = {
         <SearchBar
           value={this.state.SearchBarvalue}
           placeholder="请输入"
-          onSubmit={this.onSubmit}
-          onChange={this.onSearchBarChange}
+          onSubmit={val => {
+            const _this = this;
+            searchBarSubmit(_this, val, 0);
+          }}
+          onChange={val => {
+            const _this = this;
+            searchBarChange(_this, val, 0);
+          }}
           onCancel={() => this.setState({ showElem2: 'none' })}
           showCancelButton
         />
@@ -814,8 +885,8 @@ const FormField: IFormField = {
       const value = field.getValue();
 
       const {
-        hanmoney = '',
-        nomoney = '',
+        hanmoney = 0,
+        nomoney = 0,
         detailname = '',
         detailedData = [],
       } = value;
@@ -858,7 +929,7 @@ const FormField: IFormField = {
               <div className="m-field-view">
                 <label className="m-field-view-label">不含税金额合计(元)</label>
                 <div className="m-field-view-value">
-                  <span>{nomoney}</span>
+                  <span>{nomoney ? Number(nomoney).toFixed(2) : ''}</span>
                 </div>
               </div>
             </div>
@@ -866,7 +937,7 @@ const FormField: IFormField = {
               <div className="m-field-view">
                 <label className="m-field-view-label">含税金额合计(元)</label>
                 <div className="m-field-view-value">
-                  <span>{hanmoney}</span>
+                  <span>{hanmoney ? Number(hanmoney).toFixed(2) : ''}</span>
                 </div>
               </div>
             </div>

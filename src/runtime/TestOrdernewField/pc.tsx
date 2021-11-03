@@ -1,3 +1,42 @@
+// import React from 'react';
+// import { Input } from 'antd';
+// import { IFormField } from '../../types';
+
+// import './pc.less';
+
+// interface ISwapFormField extends IFormField {
+//   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+// }
+
+// /**
+//  * 自定义控件运行态 PC 视图
+//  */
+// const FormField: ISwapFormField = {
+//   handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+//     const { form } = this.props;
+//     form.setFieldValue('TestOrdernew', e.target.value);
+//   },
+
+//   fieldRender() {
+//     const { form } = this.props;
+//     const field = form.getFieldInstance('TestOrdernew');
+//     const label = form.getFieldProp('TestOrdernew', 'label');
+//     const placeholder = form.getFieldProp('TestOrdernew', 'placeholders');
+
+//     return (
+//       <div className="pc-custom-field-wrap">
+//         <div className="label">{label}</div>
+//         {field.getProp('viewMode') ? (
+//           field.getValue()
+//         ) : (
+//           <Input placeholder={placeholder} onChange={this.handleChange} />
+//         )}
+//       </div>
+//     );
+//   },
+// };
+
+// export default Fo,rmField;
 import { Pagination } from 'antd';
 import { Tree } from 'antd';
 const { DirectoryTree } = Tree;
@@ -25,7 +64,6 @@ import { IFormField } from '../../types';
 const { Column } = Table;
 import { FormInstance } from 'antd/lib/form';
 const { TabPane } = Tabs;
-import { toFixed } from '../../utils/fpOperations'
 
 import './pc.less';
 const mycolumns = [
@@ -114,7 +152,7 @@ interface EditableCellProps {
   children: React.ReactNode;
   dataIndex: keyof Item;
   record: Item;
-  handleSave: (record: Item,value:any) => void;
+  handleSave: (record: Item) => void;
   handleChange: (record: Item) => void;
 }
 
@@ -368,7 +406,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('TestOrdernew', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -436,12 +474,8 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney1: eval(newarr2.join('+'))
-        ? toFixed(eval(newarr2.join('+')), 2)
-        : null,
-      Inputmoney2: eval(newarr4.join('+'))
-        ? toFixed(eval(newarr4.join('+')), 2)
-        : null,
+      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
+      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
     });
   },
   newhandleAdd() {
@@ -491,7 +525,7 @@ const FormField: ISwapFormField = {
       isModalVisibletree: true,
     });
   },
-  handleSave(row: DataType, values:any) {
+  handleSave(row: DataType, values) {
     const { form } = this.props;
     const newData = [...this.state.dataSource];
     const reg = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/;
@@ -667,9 +701,7 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney1: eval(newarr2.join('+'))
-        ? toFixed(eval(newarr2.join('+')), 2)
-        : null,
+      Inputmoney1: eval(newarr2.join('+')).toFixed(2),
     });
     // 不含税金额合计;
     const newarr3 = [...this.state.dataSource];
@@ -685,9 +717,7 @@ const FormField: ISwapFormField = {
     });
 
     this.setState({
-      Inputmoney2: eval(newarr4.join('+'))
-        ? toFixed(eval(newarr4.join('+')), 2)
-        : null,
+      Inputmoney2: eval(newarr4.join('+')).toFixed(2),
     });
 
     // if (this.state.Inputmoney2) {
@@ -809,9 +839,7 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney1: eval(newarr2.join('+'))
-              ? toFixed(eval(newarr2.join('+')), 2)
-              : null,
+            Inputmoney1: eval(newarr2.join('+')).toFixed(2),
           });
           // 不含税金额合计;
 
@@ -827,9 +855,7 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney2: eval(newarr4.join('+'))
-              ? toFixed(eval(newarr4.join('+')), 2)
-              : null,
+            Inputmoney2: eval(newarr4.join('+')).toFixed(2),
           });
         } else if (dstatus === '1') {
           this.setState({
@@ -853,9 +879,7 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney1: eval(newarr2.join('+'))
-              ? toFixed(eval(newarr2.join('+')), 2)
-              : null,
+            Inputmoney1: eval(newarr2.join('+')).toFixed(2),
           });
           // 不含税金额合计;
 
@@ -871,9 +895,7 @@ const FormField: ISwapFormField = {
           });
 
           this.setState({
-            Inputmoney2: eval(newarr4.join('+'))
-              ? toFixed(eval(newarr4.join('+')), 2)
-              : null,
+            Inputmoney2: eval(newarr4.join('+')).toFixed(2),
           });
           this.setState({
             dataSource: [...newarr],
@@ -959,16 +981,16 @@ const FormField: ISwapFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailname: '',
         detailedData: [], //物资明细
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
       editData.detailname = this.state.detailname;
       editData.detailedData = this.state.dataSource;
@@ -1159,7 +1181,9 @@ const FormField: ISwapFormField = {
               placement="top"
               title={
                 <div>
-                  <span>含税单价=不含税单价*（1+税率）</span>
+                  <span>
+                    含税单价=不含税单价*（1+税率）,含税单价/不含税单价二选一填入
+                  </span>
                 </div>
               }
             >
@@ -1382,8 +1406,8 @@ const FormField: ISwapFormField = {
     if (this.props.runtimeProps.viewMode) {
       const value = field.getValue();
       const {
-        hanmoney = '',
-        nomoney = '',
+        hanmoney = 0,
+        nomoney = 0,
         detailname = '',
         detailedData = [],
       } = value;
@@ -1415,11 +1439,15 @@ const FormField: ISwapFormField = {
           <div style={{ marginTop: '10px' }} className="label">
             不含税金额(元)
           </div>
-          <div style={{ marginTop: '10px' }}>{nomoney}</div>
+          <div style={{ marginTop: '10px' }}>
+            {nomoney ? Number(nomoney).toFixed(2) : ''}
+          </div>
           <div className="label" style={{ marginTop: '10px' }}>
             含税金额(元)
           </div>
-          <div style={{ marginTop: '10px' }}>{hanmoney}</div>
+          <div style={{ marginTop: '10px' }}>
+            {hanmoney ? Number(hanmoney).toFixed(2) : ''}
+          </div>
         </div>
       );
     }
@@ -1554,6 +1582,7 @@ const FormField: ISwapFormField = {
 
           <Modal
             title="选择物资"
+            className="limited-height"
             width={1000}
             visible={this.state.isModalVisibletree}
             footer={[
@@ -1595,7 +1624,7 @@ const FormField: ISwapFormField = {
                   </Button>
                 </div>
                 <Table
-                  scroll={{ x: '1500px' }}
+                  scroll={{ x: '1500px', y: '255px' }}
                   rowSelection={{
                     type: 'checkbox',
                     ...rowSelectiontree,

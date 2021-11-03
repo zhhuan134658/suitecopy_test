@@ -18,6 +18,7 @@ import {
 } from 'antd-mobile';
 import { Tree } from 'antd';
 import './mobile.less';
+import _ from 'lodash';
 
 const Item = List.Item;
 /**
@@ -189,7 +190,54 @@ const FormField: IFormField = {
       },
     );
   },
-
+  onChangeDeduction(e: React.ChangeEvent<HTMLInputElement>) {
+    console.log('CHANGE DEDUCTION');
+    let _this = this;
+    const calcDeduction = (_this, e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log('CALC DEDUCTION');
+      const number1 = _this.state.maxnum;
+      const number2 = _this.state.Inputmoney1;
+      let val = Number(e.target.value);
+      if (val <= 0.01) {
+        _this.setState({
+          Numbervalue2: '',
+        });
+        return 0;
+      }
+      if (number1 > number2) {
+        if (val > _this.state.Inputmoney1) {
+          const aa = _this.state.Inputmoney1;
+          const bb = Number(aa) - Number(_this.state.maxnum);
+          _this.setState({
+            Numbervalue5: bb.toFixed(2),
+          });
+        } else {
+          const aa = _this.state.Inputmoney1;
+          const bb = aa - val;
+          _this.setState({
+            Numbervalue5: bb.toFixed(2),
+          });
+        }
+      } else {
+        if (val > _this.state.maxnum) {
+          const aa = _this.state.Inputmoney1;
+          const bb = aa - _this.state.maxnum;
+          _this.setState({
+            Numbervalue2: _this.state.maxnum.toFixed(2),
+            Numbervalue5: bb.toFixed(2),
+          });
+        } else {
+          const aa = _this.state.Inputmoney1;
+          const bb = aa - val;
+          _this.setState({
+            Numbervalue5: bb.toFixed(2),
+          });
+        }
+      }
+    };
+    console.log(e.target.value);
+    calcDeduction(_this, e);
+  },
   onCancel() {
     this.setState({ showElem: 'none' });
   },
@@ -201,6 +249,12 @@ const FormField: IFormField = {
     this.asyncSetFieldProps(newdate);
   },
   onSearchBarChange(value) {
+    if (!value) {
+      const newData = this.state.allData;
+      newData.name = value;
+      this.asyncSetFieldProps(newData);
+    }
+
     this.setState({ SearchBarvalue: value });
   },
   //增加明细
@@ -260,8 +314,8 @@ const FormField: IFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailedData: [], //物资明细
         petty_sele: '', //备用金抵扣
         Numbervalue1: '', //备用金余额
@@ -271,10 +325,10 @@ const FormField: IFormField = {
         Numbervalue5: '', //财务应支付金额
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
 
       editData.detailedData = this.state.materialList;
@@ -761,49 +815,15 @@ const FormField: IFormField = {
                                     value={this.state.Numbervalue2}
                                     placeholder="请输入"
                                     onChange={e => {
-                                      //   e.target.value
-                                      const number1 = this.state.maxnum;
-                                      const number2 = this.state.Inputmoney1;
-                                      let val = Number(e.target.value);
-                                      if (number1 > number2) {
-                                        if (val > this.state.Inputmoney1) {
-                                          const aa = this.state.Inputmoney1;
-                                          const bb =
-                                            Number(aa) -
-                                            Number(this.state.maxnum);
-                                          this.setState({
-                                            Numbervalue2:
-                                              this.state.Inputmoney1,
-                                            Numbervalue5: bb.toFixed(2),
-                                          });
-                                        } else {
-                                          const aa = this.state.Inputmoney1;
-                                          const bb = aa - val;
-                                          this.setState({
-                                            Numbervalue2: val.toFixed(2),
-                                            Numbervalue5: bb.toFixed(2),
-                                          });
-                                        }
-                                      } else {
-                                        if (val > this.state.maxnum) {
-                                          const aa = this.state.Inputmoney1;
-                                          const bb = aa - this.state.maxnum;
-                                          this.setState({
-                                            Numbervalue2:
-                                              this.state.maxnum.toFixed(2),
-                                            Numbervalue5: bb.toFixed(2),
-                                          });
-                                        } else {
-                                          const aa = this.state.Inputmoney1;
-                                          const bb = aa - val;
-                                          this.setState({
-                                            Numbervalue2: val.toFixed(2),
-                                            Numbervalue5: bb.toFixed(2),
-                                          });
-                                        }
-                                      }
-
-                                      console.log(e.target.value);
+                                      this.setState({
+                                        Numbervalue2: e.target.value,
+                                      });
+                                      e.persist();
+                                      const debouncedCalc = _.debounce(
+                                        this.onChangeDeduction,
+                                        1000,
+                                      );
+                                      debouncedCalc(e);
                                     }}
                                   />
                                 </div>

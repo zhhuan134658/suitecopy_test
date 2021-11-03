@@ -137,7 +137,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -305,7 +305,7 @@ const FormField: ISwapFormField = {
     // });
   },
   handleChange(row: DataType) {
-    // const inputRef = useRef<Input>(null);
+    // const inputRef = useRef<HTMLInputElement>(null);
     // const { form } = this.props;
     // form.setFieldValue('SelectLease', e.target.value);
     // document.getElementsByClassName('ptID').blur();
@@ -359,7 +359,7 @@ const FormField: ISwapFormField = {
 
     this.setState({ dataSource: newData });
   },
-  asyncSetFieldProps(vlauedata) {
+  asyncSetFieldProps(vlauedata, type = 2) {
     const { form, spi } = this.props;
     const Pro_name = form.getFieldValue('Autopro');
     vlauedata.project_name = Pro_name;
@@ -389,7 +389,6 @@ const FormField: ISwapFormField = {
       })
       .then(res => {
         console.log(JSON.parse(res.dataList[0].value));
-
         // this.state.listData = find(
         //   res.dataList,
         //   item => item.bizAlias === 'SelectLease',
@@ -405,13 +404,17 @@ const FormField: ISwapFormField = {
         try {
           newarr = JSON.parse(res.dataList[0].value).data;
         } catch (e) {}
-
-        this.setState({
-          listData: [...newarr],
-          current_page: JSON.parse(res.dataList[0].value).page,
-          total2: JSON.parse(res.dataList[0].value).count,
-        });
-
+        if (type === 1) {
+          this.setState({
+            dataSource: [...newarr],
+          });
+        } else {
+          this.setState({
+            listData: [...newarr],
+            current_page: JSON.parse(res.dataList[0].value).page,
+            total2: JSON.parse(res.dataList[0].value).count,
+          });
+        }
         // console.log(JSON.parse(newarr));
         // console.log(this.state.listData);
       });
@@ -419,7 +422,14 @@ const FormField: ISwapFormField = {
   rowClick(this, record, rowkey) {
     const { form } = this.props;
     console.log(record);
-
+    let newpage = {
+      rk_id: ['a1'],
+      number: '10',
+      page: 1,
+      name: '',
+    };
+    newpage.rk_id.push(record.id);
+    this.asyncSetFieldProps(newpage, 1);
     this.setState({ Inputvalue: record.name, isModalVisible: false }, () => {
       form.setFieldValue('Conmoney', record.money);
       form.setFieldValue('SelectLease', record.name);
@@ -631,7 +641,7 @@ const FormField: ISwapFormField = {
           </div>
 
           <Modal
-            title="请租赁计划"
+            title="选择租赁计划"
             width={1000}
             visible={this.state.isModalVisible}
             footer={[

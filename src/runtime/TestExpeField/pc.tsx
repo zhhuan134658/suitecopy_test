@@ -109,7 +109,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
   const [editing, setEditing] = useState(false);
   // const inputRef = useRef(null);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const form = useContext(EditableContext)!;
 
   useEffect(() => {
@@ -146,7 +146,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
         {/*   */}
         {/* <Input ref={inputRef} /> */}
 
-        <Input
+        <InputNumber
           className="editable-cell-value-inputNumber"
           ref={inputRef}
           onPressEnter={save}
@@ -518,7 +518,7 @@ const FormField: ISwapFormField = {
   onNumbervalue2Change(val) {
     console.log(val);
     const number1 = this.state.maxnum;
-    const number2 = this.state.Inputmoney1;
+    const number2 = this.state.Inputmoney1; // 报销费用合计
     if (number1 > number2) {
       if (val > this.state.Inputmoney1) {
         const aa = this.state.Inputmoney1;
@@ -627,8 +627,8 @@ const FormField: ISwapFormField = {
     if (!this.props.runtimeProps.viewMode) {
       console.log('发起页：fieldDidUpdate');
       let editData = {
-        hanmoney: '',
-        nomoney: '',
+        hanmoney: 0,
+        nomoney: 0,
         detailedData: [], //物资明细
         petty_sele: '', //备用金抵扣
         Numbervalue1: '', //备用金余额
@@ -638,10 +638,10 @@ const FormField: ISwapFormField = {
         Numbervalue5: '', //财务应支付金额
       };
       if (this.state.Inputmoney1) {
-        editData.hanmoney = this.state.Inputmoney1;
+        editData.hanmoney = Number(this.state.Inputmoney1);
       }
       if (this.state.Inputmoney2) {
-        editData.nomoney = this.state.Inputmoney2;
+        editData.nomoney = Number(this.state.Inputmoney2);
       }
 
       editData.detailedData = this.state.dataSource;
@@ -701,7 +701,7 @@ const FormField: ISwapFormField = {
         ),
       },
       {
-        title: '金额',  
+        title: '金额',
         dataIndex: 'money',
         render: (_, record: any) => (
           <Tooltip placement="topLeft" title={record.money}>
@@ -752,12 +752,18 @@ const FormField: ISwapFormField = {
       {
         title: '备注',
         dataIndex: 'remarks',
-        editable: true,
-        render: (_, record: any) => (
-          <Tooltip placement="topLeft" title={record.remarks}>
-            <span>{record.remarks}</span>
-          </Tooltip>
-        ),
+        render: (_, record, index) => {
+          let rec = record;
+          return (
+            <Input
+              value={record.content}
+              placeholder="请输入"
+              onChange={e => {
+                record.content = e.target.value;
+              }}
+            />
+          );
+        },
       },
 
       {
@@ -865,7 +871,7 @@ const FormField: ISwapFormField = {
     if (this.props.runtimeProps.viewMode) {
       const value = field.getValue();
       const {
-        hanmoney = '',
+        hanmoney = 0,
         detailedData = [],
         petty_sele = '',
         Numbervalue1 = '',
@@ -877,7 +883,9 @@ const FormField: ISwapFormField = {
       return (
         <div className="field-wrapper">
           <div className="label">报销合计</div>
-          <div style={{ marginTop: '10px' }}>{hanmoney}</div>
+          <div style={{ marginTop: '10px' }}>
+            {hanmoney ? Number(hanmoney).toFixed(2) : ''}
+          </div>
           <div style={{ marginTop: '10px' }} className="label">
             报销明细
           </div>
